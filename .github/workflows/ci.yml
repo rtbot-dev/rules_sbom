@@ -52,15 +52,14 @@ jobs:
         run: bazel test --nocache_test_results //tests:inputs_manifest
 
       - name: Build example SBOM targets
-        run: >
-          bazel build --verbose_failures
-          //examples/node:hello_sbom
-          //examples/go:hello_sbom
-          //examples/python:hello_sbom
-          //examples/node_complex:express_sbom
-          //examples/go_complex:cobra_sbom
-          //examples/python_complex:httpx_sbom
-          $EXTRA_BAZEL_FLAGS
+        run: |
+          set -e
+          bazel build --verbose_failures //examples/node:hello_sbom $EXTRA_BAZEL_FLAGS
+          bazel build --verbose_failures //examples/go:hello_sbom $EXTRA_BAZEL_FLAGS
+          bazel build --verbose_failures //examples/python:hello_sbom $EXTRA_BAZEL_FLAGS
+          bazel build --verbose_failures //examples/node_complex:express_sbom $EXTRA_BAZEL_FLAGS
+          bazel build --verbose_failures //examples/go_complex:cobra_sbom $EXTRA_BAZEL_FLAGS
+          bazel build --verbose_failures //examples/python_complex:httpx_sbom $EXTRA_BAZEL_FLAGS
 
       - name: Preview generated SBOMs
         if: success()
