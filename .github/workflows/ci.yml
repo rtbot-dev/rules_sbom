@@ -20,6 +20,8 @@ jobs:
 
       - name: Set up Bazelisk
         uses: bazelbuild/setup-bazelisk@v2
+        with:
+          cache: false
 
       - name: Show Bazel version
         run: bazel --version
