@@ -18,7 +18,7 @@ jobs:
       EXTRA_BAZEL_FLAGS: >-
         ${{
           (github.event_name == 'workflow_dispatch' && github.event.inputs.bazel_flags) ||
-          (matrix.os == 'windows-latest' && '--jobs=1 --local_ram_resources=2048') ||
+          (matrix.os == 'windows-latest' && '--jobs=1 --local_cpu_resources=1 --local_ram_resources=1024') ||
           ''
         }}
     defaults:
