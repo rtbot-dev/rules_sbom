@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  bazel:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bazelisk
+        uses: bazelbuild/setup-bazelisk@v2
+
+      - name: Show Bazel version
+        run: bazel --version
+
+      - name: Run unit tests
+        run: bazel test --nocache_test_results //tests:inputs_manifest
+
+      - name: Build example SBOM targets
+        run: >
+          bazel build
+          //examples/node:hello_sbom
+          //examples/go:hello_sbom
+          //examples/python:hello_sbom
+          //examples/node_complex:express_sbom
+          //examples/go_complex:cobra_sbom
+          //examples/python_complex:httpx_sbom
