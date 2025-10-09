@@ -1,0 +1,22 @@
+load("@rules_python//python:defs.bzl", "py_library")
+load("//sbom:defs.bzl", "sbom_artifact")
+
+py_library(
+    name = "hello_lib",
+    srcs = ["hello.py"],
+    data = ["requirements.txt"],
+)
+
+filegroup(
+    name = "hello_project",
+    srcs = [
+        "hello.py",
+        "requirements.txt",
+    ],
+)
+
+sbom_artifact(
+    name = "hello_sbom",
+    target = ":hello_project",
+    output = "hello_sbom.json",
+)

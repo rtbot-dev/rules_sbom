@@ -1,0 +1,16 @@
+load("//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "hello_pkg",
+    srcs = [
+        "index.js",
+        "package-lock.json",
+        "package.json",
+    ],
+)
+
+sbom_artifact(
+    name = "hello_sbom",
+    target = ":hello_pkg",
+    output = "hello_node_sbom.json",
+)

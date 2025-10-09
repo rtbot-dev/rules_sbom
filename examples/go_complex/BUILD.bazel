@@ -1,0 +1,16 @@
+load("//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "cobra_project",
+    srcs = [
+        "go.mod",
+        "go.sum",
+        "main.go",
+    ],
+)
+
+sbom_artifact(
+    name = "cobra_sbom",
+    target = ":cobra_project",
+    output = "cobra_sbom.json",
+)

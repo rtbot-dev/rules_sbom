@@ -1,0 +1,16 @@
+load("//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "httpx_project",
+    srcs = [
+        "app.py",
+        "requirements.in",
+        "requirements.txt",
+    ],
+)
+
+sbom_artifact(
+    name = "httpx_sbom",
+    target = ":httpx_project",
+    output = "httpx_sbom.json",
+)

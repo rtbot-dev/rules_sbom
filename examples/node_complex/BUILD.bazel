@@ -1,0 +1,16 @@
+load("//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "express_app",
+    srcs = [
+        "index.js",
+        "package-lock.json",
+        "package.json",
+    ],
+)
+
+sbom_artifact(
+    name = "express_sbom",
+    target = ":express_app",
+    output = "express_sbom.json",
+)

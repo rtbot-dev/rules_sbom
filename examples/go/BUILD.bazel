@@ -1,0 +1,16 @@
+load("//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "hello_pkg",
+    srcs = [
+        "go.mod",
+        "go.sum",
+        "main.go",
+    ],
+)
+
+sbom_artifact(
+    name = "hello_sbom",
+    target = ":hello_pkg",
+    output = "hello_go_sbom.json",
+)
