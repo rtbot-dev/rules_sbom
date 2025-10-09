@@ -1,0 +1,3 @@
+load("//tests:inputs_manifest_test.bzl", "inputs_manifest_test_suite")
+
+inputs_manifest_test_suite()
