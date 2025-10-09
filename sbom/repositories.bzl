@@ -86,6 +86,7 @@ def _syft_repository_impl(repo_ctx):
 alias(
     name = "syft",
     actual = "{binary}",
+    visibility = ["//visibility:public"],
 )
 """.format(binary = binary_name)
 
