@@ -41,6 +41,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: echo "MSYS2_ARG_CONV_EXCL=//" >> "$GITHUB_ENV"
 
+      - name: Configure Windows shell for Bazel
+        if: matrix.os == 'windows-latest'
+        run: echo "BAZEL_SH=C:\\Windows\\System32\\cmd.exe" >> "$GITHUB_ENV"
+
       - name: Show Bazel version
         run: bazel --version
 
