@@ -37,3 +37,32 @@ jobs:
           //examples/node_complex:express_sbom
           //examples/go_complex:cobra_sbom
           //examples/python_complex:httpx_sbom
+
+      - name: Preview generated SBOMs
+        if: success()
+        run: |
+          python - <<'PY'
+          import pathlib
+
+          root = pathlib.Path('bazel-bin/examples')
+          paths = sorted(root.rglob('*sbom.json'))
+          if not paths:
+              raise SystemExit('No SBOM files discovered')
+
+          for path in paths:
+              print(f"::group::{path}")
+              try:
+                  with path.open('r', encoding='utf-8') as fh:
+                      for idx, line in zip(range(20), fh):
+                          print(line.rstrip())
+              finally:
+                  print('::endgroup::')
+          PY
+
+      - name: Upload SBOM artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sboms-${{ matrix.os }}
+          path: |
+            bazel-bin/examples/**/*.json
