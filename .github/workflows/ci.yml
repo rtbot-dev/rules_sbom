@@ -18,30 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Bazelisk (Linux/Mac)
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          set -euxo pipefail
-          mkdir -p "$HOME/.cache/bazel" "$HOME/.bazeliskcache"
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            url="https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-amd64"
-          else
-            url="https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-darwin-arm64"
-          fi
-          curl -L "$url" -o bazelisk
-          chmod +x bazelisk
-          sudo mv bazelisk /usr/local/bin/bazelisk
-          sudo ln -sf /usr/local/bin/bazelisk /usr/local/bin/bazel
-
-      - name: Install Bazelisk (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: powershell
-        run: |
-          choco install bazelisk --no-progress --yes
-          $bazelisk = "C:\ProgramData\chocolatey\bin\bazelisk.exe"
-          Copy-Item $bazelisk "C:\ProgramData\chocolatey\bin\bazel.exe" -Force
-          "C:\ProgramData\chocolatey\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Set up Bazelisk
+        uses: bazelbuild/setup-bazelisk@v2
+        with:
+          cache: false
 
       - name: Show Bazel version
         run: bazel --version
