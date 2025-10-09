@@ -11,10 +11,12 @@ syft_repo(name = "rules_sbom_syft_darwin_amd64", version = "1.17.0", platform = 
 syft_repo(name = "rules_sbom_syft_darwin_arm64", version = "1.17.0", platform = "darwin_arm64")
 syft_repo(name = "rules_sbom_syft_linux_amd64", version = "1.17.0", platform = "linux_amd64")
 syft_repo(name = "rules_sbom_syft_linux_arm64", version = "1.17.0", platform = "linux_arm64")
+syft_repo(name = "rules_sbom_syft_windows_amd64", version = "1.17.0", platform = "windows_amd64")
 
 register_toolchains(
     "//toolchains/syft:darwin_amd64_toolchain",
     "//toolchains/syft:darwin_arm64_toolchain",
     "//toolchains/syft:linux_amd64_toolchain",
     "//toolchains/syft:linux_arm64_toolchain",
+    "//toolchains/syft:windows_amd64_toolchain",
 )
