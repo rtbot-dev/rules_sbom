@@ -42,6 +42,14 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+if command -v python3 >/dev/null 2>&1; then
+    PYTHON_CMD="python3"
+elif command -v python >/dev/null 2>&1; then
+    PYTHON_CMD="python"
+else
+    PYTHON_CMD=""
+fi
+
 if [[ -z "${output}" ]]; then
     echo "syft_wrapper: --output is required" >&2
     exit 1
@@ -53,9 +61,9 @@ timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 inputs_json="[]"
 if [[ -n "${inputs_manifest}" && -f "${inputs_manifest}" ]]; then
-    if command -v python3 >/dev/null 2>&1; then
+    if [[ -n "${PYTHON_CMD}" ]]; then
         inputs_json="$(
-python3 - "${inputs_manifest}" <<'PY' 2>/dev/null
+${PYTHON_CMD} - "${inputs_manifest}" <<'PY' 2>/dev/null
 import json
 import sys
 
@@ -107,9 +115,9 @@ PY
     fi
 fi
 
-if [[ -n "${tool}" && -x "${tool}" ]] && [[ -n "${inputs_manifest}" && -f "${inputs_manifest}" ]] && command -v python3 >/dev/null 2>&1; then
+if [[ -n "${tool}" && -x "${tool}" ]] && [[ -n "${inputs_manifest}" && -f "${inputs_manifest}" ]] && [[ -n "${PYTHON_CMD}" ]]; then
     tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/rules_sbom.XXXXXX")"
-    if python3 - "${inputs_manifest}" "${tmpdir}" <<'PY' 2>/dev/null
+    if ${PYTHON_CMD} - "${inputs_manifest}" "${tmpdir}" <<'PY' 2>/dev/null
 import os
 import shutil
 import sys
@@ -156,9 +164,9 @@ PY
 fi
 
 components_json="[]"
-if [[ -n "${inputs_manifest}" && -f "${inputs_manifest}" ]] && command -v python3 >/dev/null 2>&1; then
+if [[ -n "${inputs_manifest}" && -f "${inputs_manifest}" ]] && [[ -n "${PYTHON_CMD}" ]]; then
     components_json="$(
-python3 - "${inputs_manifest}" <<'PY' 2>/dev/null
+${PYTHON_CMD} - "${inputs_manifest}" <<'PY' 2>/dev/null
 import json
 import sys
 
