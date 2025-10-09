@@ -28,7 +28,7 @@
    )
    ```
 
-The [`docs/`](docs/overview.md) directory contains more detailed usage and toolchain notes.
+The [`docs/`](docs/overview.md) directory contains more detailed usage and toolchain notes (including [Windows testing via Parallels CLI](docs/windows_parallels.md)).
 
 ## Examples
 
