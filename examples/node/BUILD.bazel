@@ -4,6 +4,7 @@ filegroup(
     name = "hello_pkg",
     srcs = [
         "index.js",
+        "package-lock.json",
         "package.json",
     ],
 )
