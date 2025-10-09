@@ -16,6 +16,6 @@ SbomToolchainInfo = provider(
         "default_format": "Default format emitted by the tool.",
         "env": "Dictionary of environment variables applied at execution.",
         "supports_formats": "List of formats supported by this toolchain.",
-        "wrapper": "Optional wrapper executable for preprocessing.",
+        "wrapper": "Optional wrapper executable (FilesToRunProvider) for preprocessing.",
     },
 )

@@ -4,14 +4,15 @@ load("//sbom/internal:providers.bzl", "SbomToolchainInfo")
 
 def _syft_toolchain_impl(ctx):
     tool_file = ctx.file.tool
-    wrapper_exe = ctx.executable.wrapper if ctx.attr.wrapper else None
+    wrapper_info = ctx.attr.wrapper[DefaultInfo] if ctx.attr.wrapper else None
+    wrapper_runfiles = wrapper_info.files_to_run if wrapper_info else None
     toolchain_info = platform_common.ToolchainInfo(
         sbom = SbomToolchainInfo(
             tool = tool_file,
             default_format = ctx.attr.default_format,
             env = ctx.attr.env,
             supports_formats = ctx.attr.supports_formats,
-            wrapper = wrapper_exe,
+            wrapper = wrapper_runfiles,
         ),
     )
     return [toolchain_info]
