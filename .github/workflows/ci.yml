@@ -15,7 +15,12 @@ jobs:
   bazel:
     runs-on: ${{ matrix.os }}
     env:
-      EXTRA_BAZEL_FLAGS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.bazel_flags || '' }}
+      EXTRA_BAZEL_FLAGS: >-
+        ${{
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.bazel_flags) ||
+          (matrix.os == 'windows-latest' && '--jobs=1 --local_ram_resources=2048') ||
+          ''
+        }}
     defaults:
       run:
         shell: bash
