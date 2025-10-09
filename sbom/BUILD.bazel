@@ -4,4 +4,5 @@ exports_files([
     "defs.bzl",
     "repositories.bzl",
     "toolchain.bzl",
+    "setup.bzl",
 ])

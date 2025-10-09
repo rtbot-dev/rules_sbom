@@ -9,23 +9,13 @@ bazel_dep(name = "rules_sbom", version = "<release>")
 Provision the default Syft toolchain via the bundled repository rule:
 
 ```starlark
-syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-for platform in ("darwin_amd64", "darwin_arm64", "linux_amd64", "linux_arm64"):
-    syft_repo(
-        name = "rules_sbom_syft_{}".format(platform),
-        version = "1.17.0",
-        platform = platform,
-    )
+load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
 
-register_toolchains(
-    "@rules_sbom//toolchains/syft:darwin_amd64_toolchain",
-    "@rules_sbom//toolchains/syft:darwin_arm64_toolchain",
-    "@rules_sbom//toolchains/syft:linux_amd64_toolchain",
-    "@rules_sbom//toolchains/syft:linux_arm64_toolchain",
-)
+syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
+rules_sbom_setup(syft_repo)
 ```
 
-Instantiate only the platforms you plan to use—e.g., omit macOS entries on a Linux-only fleet. The repository rule ships with default SHA256 sums for these platforms; override `sha256` or `version` if you pin alternative binaries.
+`rules_sbom_setup` installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. Provide `platforms=[...]`, `version="..."`, or `sha256="..."` in the call if you need tailored downloads.
 
 Generate an SBOM for a target:
 

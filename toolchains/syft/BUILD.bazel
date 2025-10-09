@@ -101,3 +101,28 @@ toolchain(
         "@platforms//cpu:arm64",
     ],
 )
+
+syft_toolchain(
+    name = "windows_amd64_toolchain_impl",
+    tool = "@rules_sbom_syft_windows_amd64//:syft",
+    default_format = "cyclonedx_json",
+    supports_formats = [
+        "cyclonedx_json",
+        "spdx_json",
+    ],
+    wrapper = "//tools/syft_wrapper:syft_wrapper",
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+toolchain(
+    name = "windows_amd64_toolchain",
+    toolchain_type = "//toolchains:sbom_toolchain_type",
+    toolchain = ":windows_amd64_toolchain_impl",
+    target_compatible_with = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+)
