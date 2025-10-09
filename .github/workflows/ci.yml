@@ -5,10 +5,17 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      bazel_flags:
+        description: "Additional Bazel flags (optional)"
+        required: false
+        default: ""
 
 jobs:
   bazel:
     runs-on: ${{ matrix.os }}
+    env:
+      EXTRA_BAZEL_FLAGS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.bazel_flags || '' }}
     defaults:
       run:
         shell: bash
@@ -31,13 +38,14 @@ jobs:
 
       - name: Build example SBOM targets
         run: >
-          bazel build
+          bazel build --verbose_failures
           //examples/node:hello_sbom
           //examples/go:hello_sbom
           //examples/python:hello_sbom
           //examples/node_complex:express_sbom
           //examples/go_complex:cobra_sbom
           //examples/python_complex:httpx_sbom
+          $EXTRA_BAZEL_FLAGS
 
       - name: Preview generated SBOMs
         if: success()
