@@ -1,6 +1,9 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
 package(default_visibility = ["//visibility:public"])
 
-sh_binary(
+py_binary(
     name = "syft_wrapper",
-    srcs = ["wrapper.sh"],
+    srcs = ["wrapper.py"],
+    main = "wrapper.py",
 )
