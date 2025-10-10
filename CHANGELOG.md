@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/rtbot-dev/rules_sbom/compare/v0.1.1...v0.1.2) (2025-10-10)
+
+
+### Bug Fixes
+
+* clarify release reruns ([d1c644b](https://github.com/rtbot-dev/rules_sbom/commit/d1c644b0e2a23eb10b4b70ceaa809f9d29762bbc))
+
 ## [0.1.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.1.0...v0.1.1) (2025-10-10)
 
 
