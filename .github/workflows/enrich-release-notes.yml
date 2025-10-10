@@ -12,7 +12,7 @@ jobs:
   format:
     name: Format published release
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' && github.event.release.draft == false }}
+    if: ${{ github.event_name == 'release' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,30 +22,25 @@ jobs:
       - name: Update release body with install instructions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPOSITORY: ${{ github.repository }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
-          RAW_VERSION: ${{ github.event.release.tag_name }}
-          RELEASE_BODY: ${{ github.event.release.body }}
         run: |
           set -euo pipefail
+          TAG_NAME=$(python - <<'PY'
+import json, os, sys, hashlib, urllib.request, textwrap, pathlib
 
-          version="${RAW_VERSION#v}"
-          tar_url="https://github.com/${REPOSITORY}/archive/refs/tags/${TAG_NAME}.tar.gz"
-          tmp_archive="$(mktemp)"
-          curl -sSL "${tar_url}" -o "${tmp_archive}"
-          sha256="$(shasum -a 256 "${tmp_archive}" | cut -d ' ' -f1)"
-          rm "${tmp_archive}"
-          export SHA256="${sha256}"
+with open(os.environ["GITHUB_EVENT_PATH"], "r", encoding="utf-8") as fh:
+    event = json.load(fh)
+release = event["release"]
+if release.get("draft"):
+    sys.exit(0)
 
-          python - <<'PY' > release-body.md
-import os, textwrap
-
-repo = os.environ["REPOSITORY"]
-tag = os.environ["TAG_NAME"]
-version = os.environ["RAW_VERSION"].lstrip("v")
+repo = event["repository"]["full_name"]
+tag = release["tag_name"]
+version = tag.lstrip("v")
 tar_url = f"https://github.com/{repo}/archive/refs/tags/{tag}.tar.gz"
-sha256 = os.environ["SHA256"]
-existing = os.environ.get("RELEASE_BODY", "").strip()
+with urllib.request.urlopen(tar_url) as resp:
+    data = resp.read()
+sha256 = hashlib.sha256(data).hexdigest()
+existing = (release.get("body") or "").strip()
 
 body = textwrap.dedent(f"""\
 ## Install with Bzlmod
@@ -92,7 +87,13 @@ See [docs/overview.md](https://github.com/{repo}/blob/{tag}/docs/overview.md) fo
 {existing}
 """)
 
-print(body)
+path = pathlib.Path("release-body.md")
+path.write_text(body, encoding="utf-8")
+print(tag)
 PY
-
+)
+          if [ -z "${TAG_NAME}" ]; then
+            echo "No release tag produced; skipping update."
+            exit 0
+          fi
           gh release edit "${TAG_NAME}" --notes-file release-body.md
