@@ -51,6 +51,6 @@ Once changes land on `main`, the GitHub action opens a release PR. Merging that 
 
 If you need to double-check a release manually, re-run the `Release Please` workflow from the Actions tab; it will only open a new PR when there are user-facing commits since the last tag.
 
-Use `bazel sync` after upgrading to ensure the Syft toolchain archives download for your host platform; this refreshes the Syft binaries for the host OS/architecture.
+Use `bazel sync` after upgrading to ensure the Syft toolchain archives download for your host platform; this refreshes the Syft binaries for the host OS/architecture and avoids stale CLI binaries across machines.
 
 Every published release now includes ready-to-copy install snippets (Bzlmod and WORKSPACE) directly in the GitHub release notes for easy onboarding. If you need to pin Syft to a different version, call `rules_sbom_setup(..., version="<syft_version>")` in your workspace or MODULE file.
