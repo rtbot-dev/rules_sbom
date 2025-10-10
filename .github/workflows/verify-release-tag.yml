@@ -20,15 +20,15 @@ jobs:
           TAG="${GITHUB_REF##*/}"
           VERSION="${TAG#v}"
           MODULE_VERSION=$(python - <<'PY'
-import re
-from pathlib import Path
+            import re
+            from pathlib import Path
 
-match = re.search(r'version\s*=\s*"([^"]+)"', Path("MODULE.bazel").read_text())
-if not match:
-    raise SystemExit("Unable to locate version in MODULE.bazel")
-print(match.group(1))
-PY
-)
+            match = re.search(r'version\s*=\s*"([^"]+)"', Path("MODULE.bazel").read_text())
+            if not match:
+                raise SystemExit("Unable to locate version in MODULE.bazel")
+            print(match.group(1))
+          PY
+          )
           if [ "$VERSION" != "$MODULE_VERSION" ]; then
             echo "Tag version $VERSION does not match MODULE.bazel version $MODULE_VERSION" >&2
             exit 1
