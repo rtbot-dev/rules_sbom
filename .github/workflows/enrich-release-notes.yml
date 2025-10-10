@@ -12,13 +12,8 @@ jobs:
   format:
     name: Format published release
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' }}
+    if: github.event_name == 'release'
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.release.tag_name }}
-
       - name: Update release body with install instructions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,7 +24,10 @@ import json, os, sys, hashlib, urllib.request, textwrap, pathlib
 
 with open(os.environ["GITHUB_EVENT_PATH"], "r", encoding="utf-8") as fh:
     event = json.load(fh)
-release = event["release"]
+release = event.get("release")
+if not release:
+    print("No release payload; skipping")
+    sys.exit(0)
 if release.get("draft"):
     sys.exit(0)
 
