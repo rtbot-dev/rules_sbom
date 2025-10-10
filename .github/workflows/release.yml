@@ -15,8 +15,7 @@ jobs:
     name: Create Release Pull Request
     runs-on: ubuntu-latest
     steps:
-      - id: release
-        uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         with:
           pull-request-header: |
             ## Release Preview
@@ -26,67 +25,3 @@ jobs:
             ---
 
             Once merged, Release Please will tag `v${version}` and publish the GitHub release automatically.
-      - name: Enrich release notes with install instructions
-        if: steps.release.outputs.release_created == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_NAME: ${{ steps.release.outputs.tag_name }}
-          VERSION: ${{ steps.release.outputs.version }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-
-          TAR_URL="https://github.com/${REPOSITORY}/archive/refs/tags/${TAG_NAME}.tar.gz"
-          TMP_ARCHIVE="$(mktemp)"
-          curl -sSL "${TAR_URL}" -o "${TMP_ARCHIVE}"
-          SHA256="$(shasum -a 256 "${TMP_ARCHIVE}" | cut -d ' ' -f1)"
-          rm "${TMP_ARCHIVE}"
-
-          EXISTING_BODY="$(gh release view "${TAG_NAME}" --json body --jq '.body')"
-
-          cat > release-body.md <<EOF
-## Install with Bzlmod
-
-Add to your \`MODULE.bazel\`:
-
-\`\`\`starlark
-bazel_dep(name = "rules_sbom", version = "${VERSION}")
-
-load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-rules_sbom_setup(syft_repo)
-\`\`\`
-
-## Install with a WORKSPACE
-
-Download and pin the release archive:
-
-- URL: \`${TAR_URL}\`
-- SHA256: \`${SHA256}\`
-
-Then in your \`WORKSPACE\` file:
-
-\`\`\`starlark
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "rules_sbom",
-    urls = ["${TAR_URL}"],
-    strip_prefix = "rules_sbom-${VERSION}",
-    sha256 = "${SHA256}",
-)
-
-load("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-
-rules_sbom_setup(syft_repository)
-\`\`\`
-
-See [docs/overview.md](https://github.com/${REPOSITORY}/blob/${TAG_NAME}/docs/overview.md) for advanced configuration options.
-
----
-
-${EXISTING_BODY}
-EOF
-
-          gh release edit "${TAG_NAME}" --notes-file release-body.md
