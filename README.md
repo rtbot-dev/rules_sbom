@@ -38,3 +38,13 @@ The [`docs/`](docs/overview.md) directory contains more detailed usage and toolc
 - Go (cobra CLI with transitive deps): [`examples/go_complex`](examples/go_complex/BUILD.bazel)
 - Node.js (basic): [`examples/node`](examples/node/BUILD.bazel)
 - Node.js (express app with transitive deps): [`examples/node_complex`](examples/node_complex/BUILD.bazel)
+
+## Release workflow
+
+Releases are automated with Release Please. Conventional commits drive the next version:
+
+- `feat:` bumps the minor version while we are pre-1.0.
+- `fix:` (or other non-feature commits) bumps the patch version.
+- Commits with `BREAKING CHANGE:` or a `!` trigger a major bump.
+
+Once changes land on `main`, the GitHub action opens a release PR. Merging that PR tags `vX.Y.Z`, publishes the GitHub release, and the `Verify Release Tag` workflow confirms that the tag matches the version declared in `MODULE.bazel`.
