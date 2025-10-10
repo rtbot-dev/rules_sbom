@@ -4,11 +4,7 @@
       "release-type": "bazel",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        {
-          "type": "plain-text",
-          "path": "MODULE.bazel",
-          "pattern": "version = \"(?<version>[^\"]+)\""
-        }
+        "MODULE.bazel"
       ]
     }
   }
