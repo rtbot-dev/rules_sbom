@@ -26,77 +26,8 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-
-          python <<'PY'
-import hashlib
-import os
-import subprocess
-import textwrap
-import urllib.request
-from pathlib import Path
-
-tag = os.environ["TAG_NAME"]
-version = os.environ["VERSION"]
-repo = os.environ["REPOSITORY"]
-tar_url = f"https://github.com/{repo}/archive/refs/tags/{tag}.tar.gz"
-
-with urllib.request.urlopen(tar_url) as response:
-    data = response.read()
-sha256 = hashlib.sha256(data).hexdigest()
-
-existing_body = subprocess.check_output(
-    ["gh", "release", "view", tag, "--json", "body", "--jq", ".body"],
-    text=True,
-).strip()
-
-body = textwrap.dedent(
-    f"""\
-    ## Install with Bzlmod
-
-    Add to your `MODULE.bazel`:
-
-    ```starlark
-    bazel_dep(name = "rules_sbom", version = "{version}")
-
-    load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-    syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-    rules_sbom_setup(syft_repo)
-    ```
-
-    ## Install with a WORKSPACE
-
-    Download and pin the release archive:
-
-    - URL: `{tar_url}`
-    - SHA256: `{sha256}`
-
-    Then in your `WORKSPACE` file:
-
-    ```starlark
-    load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-    http_archive(
-        name = "rules_sbom",
-        urls = ["{tar_url}"],
-        strip_prefix = "rules_sbom-{version}",
-        sha256 = "{sha256}",
-    )
-
-    load("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-    load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-
-    rules_sbom_setup(syft_repository)
-    ```
-
-    See [docs/overview.md](https://github.com/{repo}/blob/{tag}/docs/overview.md) for advanced configuration options.
-
-    ---
-
-    {existing_body}
-    """
-)
-
-Path("release-body.md").write_text(body, encoding="utf-8")
-PY
-
+          python tools/update_release_notes.py \
+            --repo "${REPOSITORY}" \
+            --tag "${TAG_NAME}" \
+            --version "${VERSION}"
           gh release edit "${TAG_NAME}" --notes-file release-body.md
