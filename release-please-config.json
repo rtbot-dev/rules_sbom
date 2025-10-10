@@ -4,6 +4,8 @@
       "release-type": "bazel",
       "changelog-path": "CHANGELOG.md",
       "pull-request-title-pattern": "Release${scope}${component}: ${version}",
+      "pull-request-header": "## Release Preview\n\nThis automated PR prepares `rules_sbom` for the next tag. Please review the version bump and changelog.",
+      "pull-request-footer": "---\n\nOnce merged, Release Please will tag `v${version}` and publish the GitHub release automatically.",
       "extra-files": [
         "MODULE.bazel"
       ]
