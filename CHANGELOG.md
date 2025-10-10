@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.0...v0.4.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* checkout before note enrichment ([f5e730d](https://github.com/rtbot-dev/rules_sbom/commit/f5e730d970fb14bd509a51fa4c0d5608132e6ad4))
+
 ## [0.4.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.3.0...v0.4.0) (2025-10-10)
 
 
