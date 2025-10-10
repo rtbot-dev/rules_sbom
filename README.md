@@ -48,3 +48,5 @@ Releases are automated with Release Please. Conventional commits drive the next 
 - Commits with `BREAKING CHANGE:` or a `!` trigger a major bump.
 
 Once changes land on `main`, the GitHub action opens a release PR. Merging that PR tags `vX.Y.Z`, publishes the GitHub release, and the `Verify Release Tag` workflow confirms that the tag matches the version declared in `MODULE.bazel`.
+
+If you need to double-check a release manually, re-run the `Release Please` workflow from the Actions tab; it will only open a new PR when there are user-facing commits since the last tag.
