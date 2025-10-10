@@ -17,6 +17,9 @@ jobs:
     steps:
       - id: release
         uses: googleapis/release-please-action@v4
+      - name: Checkout repository
+        if: steps.release.outputs.release_created == 'true'
+        uses: actions/checkout@v4
       - name: Enrich release notes with install instructions
         if: steps.release.outputs.release_created == 'true'
         env:
