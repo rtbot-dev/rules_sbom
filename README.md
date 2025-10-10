@@ -1,5 +1,9 @@
 # rules_sbom
 
+[![Release](https://img.shields.io/github/v/release/rtbot-dev/rules_sbom?label=Release&logo=github)](https://github.com/rtbot-dev/rules_sbom/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/rtbot-dev/rules_sbom/ci.yml?label=CI&logo=github)](https://github.com/rtbot-dev/rules_sbom/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/rtbot-dev/rules_sbom?label=License&color=blue)](LICENSE)
+
 `rules_sbom` provides Bazel rules for generating Software Bill of Materials (SBOM) artifacts from Bazel targets using best-in-class external tooling.
 
 > ⚠️ This repository is under active development. The public APIs and toolchain integrations are not yet stable.
