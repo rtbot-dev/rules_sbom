@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.1.0...v0.1.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* document release flow ([677a2bd](https://github.com/rtbot-dev/rules_sbom/commit/677a2bd5fd40a992b149a2e0112ead3e1592e06f))
+
 ## [0.1.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.0.1...v0.1.0) (2025-10-10)
 
 
