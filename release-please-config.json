@@ -3,7 +3,8 @@
     ".": {
       "release-type": "bazel",
       "changelog-path": "CHANGELOG.md",
-      "pull-request-title-pattern": "chore: release ${version}",
+      "pull-request-title-pattern": "Release${component} ${version} (${scope})",
+      "component-no-space": true,
       "extra-files": [
         "MODULE.bazel"
       ]
