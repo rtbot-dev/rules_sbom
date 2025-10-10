@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/rtbot-dev/rules_sbom/compare/v0.1.2...v0.1.3) (2025-10-10)
+
+
+### Bug Fixes
+
+* clarify sync step ([08cd7df](https://github.com/rtbot-dev/rules_sbom/commit/08cd7df468a02d6f75d02ad8927633eb7f24d21e))
+* note syncing toolchains ([62b52ab](https://github.com/rtbot-dev/rules_sbom/commit/62b52ab6f328728728d60742d30b8cf1769460b0))
+
 ## [0.1.2](https://github.com/rtbot-dev/rules_sbom/compare/v0.1.1...v0.1.2) (2025-10-10)
 
 
