@@ -1,0 +1,98 @@
+name: Enrich Release Notes
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    name: Format published release
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' && github.event.release.draft == false }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Update release body with install instructions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          RAW_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          set -euo pipefail
+
+          version="${RAW_VERSION#v}"
+          tar_url="https://github.com/${REPOSITORY}/archive/refs/tags/${TAG_NAME}.tar.gz"
+          tmp_archive="$(mktemp)"
+          curl -sSL "${tar_url}" -o "${tmp_archive}"
+          sha256="$(shasum -a 256 "${tmp_archive}" | cut -d ' ' -f1)"
+          rm "${tmp_archive}"
+          export SHA256="${sha256}"
+
+          python - <<'PY' > release-body.md
+import os, textwrap
+
+repo = os.environ["REPOSITORY"]
+tag = os.environ["TAG_NAME"]
+version = os.environ["RAW_VERSION"].lstrip("v")
+tar_url = f"https://github.com/{repo}/archive/refs/tags/{tag}.tar.gz"
+sha256 = os.environ["SHA256"]
+existing = os.environ.get("RELEASE_BODY", "").strip()
+
+body = textwrap.dedent(f"""\
+## Install with Bzlmod
+
+Add to your `MODULE.bazel`:
+
+```starlark
+bazel_dep(name = "rules_sbom", version = "{version}")
+
+load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
+syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
+rules_sbom_setup(syft_repo)
+```
+
+## Install with a WORKSPACE
+
+Download and pin the release archive:
+
+- URL: `{tar_url}`
+- SHA256: `{sha256}`
+
+Then in your `WORKSPACE` file:
+
+```starlark
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "rules_sbom",
+    urls = ["{tar_url}"],
+    strip_prefix = "rules_sbom-{version}",
+    sha256 = "{sha256}",
+)
+
+load("@rules_sbom//sbom:repositories.bzl", "syft_repository")
+load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
+
+rules_sbom_setup(syft_repository)
+```
+
+See [docs/overview.md](https://github.com/{repo}/blob/{tag}/docs/overview.md) for advanced configuration options.
+
+---
+
+{existing}
+""")
+
+print(body)
+PY
+
+          gh release edit "${TAG_NAME}" --notes-file release-body.md
