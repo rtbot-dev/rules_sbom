@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.4...v0.4.5) (2025-10-11)
+
+
+### Bug Fixes
+
+* add sbom setup module extension ([eeb5706](https://github.com/rtbot-dev/rules_sbom/commit/eeb5706497ea2d02c301958603d491c788f063ab))
+
 ## [0.4.4](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.3...v0.4.4) (2025-10-11)
 
 
