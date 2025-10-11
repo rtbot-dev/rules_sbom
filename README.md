@@ -3,6 +3,7 @@
 [![Release](https://img.shields.io/github/v/release/rtbot-dev/rules_sbom?label=Release&logo=github)](https://github.com/rtbot-dev/rules_sbom/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/rtbot-dev/rules_sbom/ci.yml?label=CI&logo=github)](https://github.com/rtbot-dev/rules_sbom/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/rtbot-dev/rules_sbom?label=License&color=blue)](LICENSE)
+[![Bazel](https://img.shields.io/badge/Bazel-43A047?logo=Bazel&logoColor=white)](https://bazel.build/)
 
 `rules_sbom` provides Bazel rules for generating Software Bill of Materials (SBOM) artifacts from Bazel targets using best-in-class external tooling.
 
@@ -10,10 +11,18 @@
 
 ## Getting started
 
-1. Add the dependency in `MODULE.bazel`:
+1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with an override:
    ```starlark
-   bazel_dep(name = "rules_sbom", version = "<release>")
+   bazel_dep(name = "rules_sbom", version = "0.4.2")
+
+   archive_override(
+       module_name = "rules_sbom",
+       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.4.2.tar.gz"],
+       strip_prefix = "rules_sbom-0.4.2",
+       sha256 = "481cdf1bf8d585aa1c3b60b6741e245ee313bdc8c354cab8999ac53f9bb24ced",
+   )
    ```
+   Update the version and checksum whenever you move to a newer release.
 2. Provision the bundled Syft toolchain with built-in defaults:
    ```starlark
    load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
