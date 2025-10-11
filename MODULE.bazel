@@ -5,6 +5,7 @@ module(
 
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "rules_python", version = "0.32.0")
+bazel_dep(name = "platforms", version = "1.0.0")
 
 syft_repo = use_repo_rule("//sbom:repositories.bzl", "syft_repository")
 syft_repo(name = "rules_sbom_syft_darwin_amd64", version = "1.17.0", platform = "darwin_amd64")
