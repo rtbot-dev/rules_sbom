@@ -13,24 +13,21 @@
 
 1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with an override:
    ```starlark
-   bazel_dep(name = "rules_sbom", version = "0.4.2")
+   bazel_dep(name = "rules_sbom", version = "0.4.5")
 
    archive_override(
        module_name = "rules_sbom",
-       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.4.2.tar.gz"],
-       strip_prefix = "rules_sbom-0.4.2",
-       sha256 = "481cdf1bf8d585aa1c3b60b6741e245ee313bdc8c354cab8999ac53f9bb24ced",
+       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.4.5.tar.gz"],
+       strip_prefix = "rules_sbom-0.4.5",
+       sha256 = "<sha256>",
    )
    ```
    Update the version and checksum whenever you move to a newer release.
 2. Provision the bundled Syft toolchain with built-in defaults:
    ```starlark
-   load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-
-   syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-   rules_sbom_setup(syft_repo)
+   sbom_ext = use_extension("@rules_sbom//sbom:extensions.bzl", "sbom_setup")
    ```
-   The setup helper preinstalls Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with default SHA256 sums. Override the platforms, version, or SHA via `rules_sbom_setup(..., platforms=[...], version="...")` if needed.
+   The extension preinstalls Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with default SHA256 sums. To customize the download set, create a small wrapper extension that calls `rules_sbom_setup(..., platforms=[...], version="...")`.
 3. Define SBOM targets:
    ```starlark
    load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
@@ -66,4 +63,4 @@ If you need to double-check a release manually, re-run the `Release Please` work
 
 Use `bazel sync` after upgrading to ensure the Syft toolchain archives download for your host platform; this refreshes the Syft binaries for the host OS/architecture and avoids stale CLI binaries across machines.
 
-Every published release now includes ready-to-copy install snippets (Bzlmod and WORKSPACE) directly in the GitHub release notes for easy onboarding. If you need to pin Syft to a different version, call `rules_sbom_setup(..., version="<syft_version>")` in your workspace or MODULE file.
+Every published release now includes ready-to-copy install snippets (Bzlmod and WORKSPACE) directly in the GitHub release notes for easy onboarding. If you need to pin Syft to a different version, call `rules_sbom_setup(..., version="<syft_version>")` from a custom module extension or in your WORKSPACE.

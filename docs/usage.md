@@ -3,28 +3,25 @@
 Add the dependency in `MODULE.bazel`. Until `rules_sbom` is listed in the Bazel Central Registry, pin the GitHub release with an override:
 
 ```starlark
-bazel_dep(name = "rules_sbom", version = "0.4.2")
+bazel_dep(name = "rules_sbom", version = "0.4.5")
 
 archive_override(
     module_name = "rules_sbom",
-    urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.4.2.tar.gz"],
-    strip_prefix = "rules_sbom-0.4.2",
-    sha256 = "481cdf1bf8d585aa1c3b60b6741e245ee313bdc8c354cab8999ac53f9bb24ced",
+    urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.4.5.tar.gz"],
+    strip_prefix = "rules_sbom-0.4.5",
+    sha256 = "<sha256>",
 )
 ```
 
 Update the version and checksum whenever you upgrade to a newer release.
 
-Provision the default Syft toolchain via the bundled repository rule:
+Provision the default Syft toolchain via the bundled module extension:
 
 ```starlark
-load("@rules_sbom//sbom:setup.bzl", "rules_sbom_setup")
-
-syft_repo = use_repo_rule("@rules_sbom//sbom:repositories.bzl", "syft_repository")
-rules_sbom_setup(syft_repo)
+sbom_ext = use_extension("@rules_sbom//sbom:extensions.bzl", "sbom_setup")
 ```
 
-`rules_sbom_setup` installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. Provide `platforms=[...]`, `version="..."`, or `sha256="..."` in the call if you need tailored downloads.
+The extension installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. To customize the download set, write a small wrapper extension that calls `rules_sbom_setup(..., version = "1.18.0", platforms = ["linux_amd64"])`.
 
 Generate an SBOM for a target:
 

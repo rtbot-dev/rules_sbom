@@ -28,7 +28,7 @@ def rules_sbom_setup(syft_repo_rule, version = "1.17.0", platforms = None):
     repos = []
     toolchains = []
     for platform in platforms:
-        if not isinstance(platform, str) or "_" not in platform:
+        if type(platform) != "string" or "_" not in platform:
             fail("rules_sbom_setup: platform '{}' must be a string like 'os_arch'".format(platform))
         repo_name = "rules_sbom_syft_{}".format(platform)
         syft_repo_rule(
