@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.8](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.7...v0.4.8) (2025-10-11)
+
+
+### Bug Fixes
+
+* support bzlmod toolchain registration ([2a001e6](https://github.com/rtbot-dev/rules_sbom/commit/2a001e67762dccdbcc6e1cc578fcf89e5211476c))
+
 ## [0.4.7](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.6...v0.4.7) (2025-10-11)
 
 
