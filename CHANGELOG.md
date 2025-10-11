@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.3...v0.4.4) (2025-10-11)
+
+
+### Bug Fixes
+
+* declare dependency on platforms module ([d822066](https://github.com/rtbot-dev/rules_sbom/commit/d8220661660f42c085049d9dc0ba416bed74884d))
+
 ## [0.4.3](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.2...v0.4.3) (2025-10-11)
 
 
