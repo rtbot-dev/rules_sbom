@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.5...v0.4.6) (2025-10-11)
+
+
+### Bug Fixes
+
+* create repos from module extension ([ceef40d](https://github.com/rtbot-dev/rules_sbom/commit/ceef40d2b85bc7007fb6e19e86d5cefcab281259))
+
 ## [0.4.5](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.4...v0.4.5) (2025-10-11)
 
 
