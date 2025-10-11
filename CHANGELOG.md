@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.7](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.6...v0.4.7) (2025-10-11)
+
+
+### Bug Fixes
+
+* register syft repositories in extension ([2f76934](https://github.com/rtbot-dev/rules_sbom/commit/2f769345cb6967978f144e71a488b5e61f0d6f6e))
+
 ## [0.4.6](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.5...v0.4.6) (2025-10-11)
 
 
