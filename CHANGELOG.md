@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.2...v0.4.3) (2025-10-11)
+
+
+### Bug Fixes
+
+* update install instructions ([398d350](https://github.com/rtbot-dev/rules_sbom/commit/398d350c571ec6387a59daba325c114f35b0d574))
+
 ## [0.4.2](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.1...v0.4.2) (2025-10-10)
 
 
