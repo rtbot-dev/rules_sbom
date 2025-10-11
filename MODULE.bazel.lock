@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "1b0afe26ba0a5021a3670d5d6ae0510f865e917580efe0f3d15392d58b1a41d2",
+  "moduleFileHash": "b6b6c45d141a64e34ad44762883aa2cb88061818cad9a8419578cf8e2038e9c6",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -18,7 +18,7 @@
   "moduleDepGraph": {
     "<root>": {
       "name": "rules_sbom",
-      "version": "0.4.5",
+      "version": "0.4.7",
       "key": "<root>",
       "repoName": "rules_sbom",
       "executionPlatformsToRegister": [],

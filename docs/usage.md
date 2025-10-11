@@ -19,9 +19,17 @@ Provision the default Syft toolchain via the bundled module extension:
 
 ```starlark
 sbom_ext = use_extension("@rules_sbom//sbom:extensions.bzl", "sbom_setup")
+
+register_toolchains(
+    "@rules_sbom//toolchains/syft:darwin_amd64_toolchain",
+    "@rules_sbom//toolchains/syft:darwin_arm64_toolchain",
+    "@rules_sbom//toolchains/syft:linux_amd64_toolchain",
+    "@rules_sbom//toolchains/syft:linux_arm64_toolchain",
+    "@rules_sbom//toolchains/syft:windows_amd64_toolchain",
+)
 ```
 
-The extension installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. To customize the download set, write a small wrapper extension that calls `rules_sbom_setup(..., version = "1.18.0", platforms = ["linux_amd64"])`.
+The extension installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. To customize the download set, write a small wrapper extension that calls `rules_sbom_setup(..., version = "1.18.0", platforms = ["linux_amd64"], register_toolchains = False)` and register whichever toolchains you need.
 
 Generate an SBOM for a target:
 

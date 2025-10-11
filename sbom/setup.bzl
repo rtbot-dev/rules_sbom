@@ -8,7 +8,11 @@ _TOOLCHAIN_LABELS = {
     "windows_amd64": "@rules_sbom//toolchains/syft:windows_amd64_toolchain",
 }
 
-def rules_sbom_setup(syft_repo_rule, version = "1.17.0", platforms = None):
+def rules_sbom_setup(
+        syft_repo_rule,
+        version = "1.17.0",
+        platforms = None,
+        register_toolchains = True):
     """Registers Syft repositories and toolchains with sensible defaults.
 
     Args:
@@ -42,7 +46,7 @@ def rules_sbom_setup(syft_repo_rule, version = "1.17.0", platforms = None):
         if label:
             toolchains.append(label)
 
-    if toolchains:
+    if register_toolchains and toolchains:
         native.register_toolchains(*toolchains)
 
     return repos

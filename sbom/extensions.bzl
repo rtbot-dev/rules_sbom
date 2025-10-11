@@ -4,7 +4,15 @@ load("//sbom:repositories.bzl", "syft_repository")
 load("//sbom:setup.bzl", "rules_sbom_setup")
 
 def _sbom_setup_impl(module_ctx):
-    rules_sbom_setup(syft_repository)
+    repos = rules_sbom_setup(
+        syft_repository,
+        register_toolchains = False,
+    )
+
+    return module_ctx.extension_metadata(
+        root_module_direct_deps = repos,
+        root_module_direct_dev_deps = [],
+    )
 
 sbom_setup = module_extension(
     implementation = _sbom_setup_impl,
