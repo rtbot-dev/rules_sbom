@@ -56,6 +56,32 @@ The [`docs/`](docs/overview.md) directory contains more detailed usage and toolc
 - Go (cobra CLI with transitive deps): [`examples/go_complex`](examples/go_complex/BUILD.bazel)
 - Node.js (basic): [`examples/node`](examples/node/BUILD.bazel)
 - Node.js (express app with transitive deps): [`examples/node_complex`](examples/node_complex/BUILD.bazel)
+- JavaScript / pnpm monorepo scenarios:
+  - Service/package SBOM: point `sbom_artifact` at the Bazel binary target (for example a `js_binary`). The Syft wrapper stages only that target's runfiles, synthesises a scoped `package.json`/`package-lock.json`, and disables GitHub Action catalogers, so the SBOM lists just the dependencies that ship with the service.
+  - Whole-repo SBOM: collect the workspace-level pnpm state into a `filegroup` and wrap it with `sbom_artifact`:
+
+    ```starlark
+    load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
+
+    filegroup(
+        name = "workspace_inputs",
+        srcs = [
+            "//:node_modules",
+            "//:package.json",
+            "//:pnpm-lock.yaml",
+        ],
+    )
+
+    sbom_artifact(
+        name = "workspace_sbom",
+        target = ":workspace_inputs",
+    )
+    ```
+
+    Building this target produces a CycloneDX SBOM that aggregates every dependency resolved across the pnpm workspace.
+- Go services:
+  - Service-level SBOMs can include the compiled binary together with module metadata. One approach is to create a `filegroup` that contains the service binary plus `go.mod`/`go.sum`, then pass that group to `sbom_artifact` so Syft enumerates the transitive Go modules.
+  - Workspace-level SBOMs can reuse the same `filegroup` pattern as the pnpm example above: add the repository `go.mod`/`go.sum` (and any additional module manifests) alongside the Node.js inputs before invoking `sbom_artifact`.
 
 ## Release workflow
 

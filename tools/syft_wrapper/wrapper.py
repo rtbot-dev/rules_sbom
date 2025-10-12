@@ -39,18 +39,126 @@ def _read_manifest(manifest_path: Path):
 def _copy_inputs(entries):
     tmpdir = Path(tempfile.mkdtemp(prefix="rules_sbom_"))
     for src, rel in entries:
+        dest = tmpdir / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
         try:
-            dest = tmpdir / rel
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, dest)
+            if src.exists() and src.is_dir():
+                shutil.copytree(src, dest, dirs_exist_ok=True)
+            else:
+                shutil.copy2(src, dest)
+        except IsADirectoryError:
+            shutil.copytree(src, dest, dirs_exist_ok=True)
         except FileNotFoundError:
             # Skip missing files; Syft will handle absent inputs.
             continue
     return tmpdir
 
 
+def _read_package_json(pkg_dir: Path):
+    pkg_json = pkg_dir / "package.json"
+    if not pkg_json.exists():
+        return None
+    try:
+        return json.loads(pkg_json.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+
+
+def _collect_node_modules(root: Path):
+    node_modules = root / "node_modules"
+    if not node_modules.exists():
+        return {}
+
+    packages = {}
+    for pkg_json in node_modules.rglob("package.json"):
+        pkg_dir = pkg_json.parent
+        rel = pkg_dir.relative_to(root)
+        data = _read_package_json(pkg_dir)
+        if not data:
+            continue
+        name = data.get("name")
+        if not name or name.count("/") > 1:
+            continue
+        dependencies = {
+            dep_name: dep_spec
+            for dep_name, dep_spec in (data.get("dependencies") or {}).items()
+            if dep_name and dep_name.count("/") <= 1
+        }
+        packages[rel.as_posix()] = {
+            "name": name,
+            "version": data.get("version"),
+            "dependencies": dependencies,
+        }
+    return packages
+
+
+def _write_root_package_manifest(root: Path, packages: dict):
+    node_modules = root / "node_modules"
+    if not node_modules.exists():
+        return
+
+    dependencies = {}
+
+    def _add_dependency(pkg_path: Path, display_name: str):
+        data = _read_package_json(pkg_path)
+        if not data:
+            return
+        version = data.get("version")
+        if version and display_name.count("/") <= 1:
+            dependencies[display_name] = version
+
+    for child in node_modules.iterdir():
+        if child.name.startswith("."):
+            continue
+        if child.is_dir():
+            if child.name.startswith("@"):
+                for scoped in child.iterdir():
+                    if scoped.is_dir():
+                        scoped_name = "{}/{}".format(child.name, scoped.name)
+                        _add_dependency(scoped, scoped_name)
+            else:
+                _add_dependency(child, child.name)
+
+    package_json = {
+        "name": "sbom-staging",
+        "version": "0.0.0",
+        "dependencies": dependencies,
+    }
+    (root / "package.json").write_text(json.dumps(package_json, indent=2), encoding="utf-8")
+
+    packages_section = {
+        "": {
+            "name": package_json["name"],
+            "version": package_json["version"],
+            "dependencies": {
+                dep: spec for dep, spec in dependencies.items() if dep.count("/") <= 1
+            },
+        },
+    }
+
+    for rel, meta in packages.items():
+        entry = {}
+        if meta.get("version"):
+            entry["version"] = meta["version"]
+        if meta.get("dependencies"):
+            entry["dependencies"] = meta["dependencies"]
+        packages_section[rel] = entry
+
+    lock = {
+        "name": package_json["name"],
+        "version": package_json["version"],
+        "lockfileVersion": 3,
+        "packages": packages_section,
+    }
+    (root / "package-lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
+
+
 def _run_syft(tool, syft_format, staging_dir, output, config, extra_args):
     cmd = [tool, "scan", str(staging_dir), "-o", f"{syft_format}={output}", "--quiet"]
+    cmd.extend([
+        "--select-catalogers",
+        "-github-actions-usage-cataloger,-github-action-workflow-usage-cataloger",
+    ])
     if config:
         cmd.extend(["--config", config])
     if extra_args:
@@ -141,6 +249,10 @@ def main(argv=None):
 
     staging_dir = _copy_inputs(entries)
     syft_format = FORMAT_MAP.get(args.format, args.format)
+
+    packages = _collect_node_modules(staging_dir)
+    if packages:
+        _write_root_package_manifest(staging_dir, packages)
 
     try:
         success = _run_syft(
