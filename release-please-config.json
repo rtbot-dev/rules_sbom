@@ -25,6 +25,12 @@
           "path": "README.md",
           "search": "rules_sbom-[0-9.]+",
           "replace": "rules_sbom-{{version}}"
+        },
+        {
+          "type": "text",
+          "path": "README.md",
+          "search": "sha256 = \"[0-9a-f]+\"",
+          "replace": "sha256 = \"{{sha256}}\""
         }
       ]
     }
