@@ -8,30 +8,7 @@
       "pull-request-footer": "---\n\nOnce merged, Release Please will tag `v${version}` and publish the GitHub release automatically.",
       "extra-files": [
         "MODULE.bazel",
-        {
-          "type": "text",
-          "path": "README.md",
-          "search": "bazel_dep\\(name = \\\"rules_sbom\\\", version = \\\"[0-9.]+\\\"\\)",
-          "replace": "bazel_dep(name = \\\"rules_sbom\\\", version = \\\"{{version}}\\\")"
-        },
-        {
-          "type": "text",
-          "path": "README.md",
-          "search": "archive/refs/tags/v[0-9.]+",
-          "replace": "archive/refs/tags/v{{version}}"
-        },
-        {
-          "type": "text",
-          "path": "README.md",
-          "search": "rules_sbom-[0-9.]+",
-          "replace": "rules_sbom-{{version}}"
-        },
-        {
-          "type": "text",
-          "path": "README.md",
-          "search": "sha256 = \\\"[0-9a-f]+\\\"",
-          "replace": "sha256 = \\\"{{sha256}}\\\""
-        }
+        "README.md"
       ]
     }
   }
