@@ -11,7 +11,7 @@
 
 ## Getting started
 
-1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with this override snippet:
+1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with an override:
    ```starlark
    bazel_dep(name = "rules_sbom", version = "0.5.0")
 
