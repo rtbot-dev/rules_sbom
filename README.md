@@ -13,12 +13,12 @@
 
 1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with this override snippet:
    ```starlark
-   bazel_dep(name = "rules_sbom", version = "0.5.0")  # x-release-please-version
+   bazel_dep(name = "rules_sbom", version = "0.5.1")  # x-release-please-version
 
    archive_override(
        module_name = "rules_sbom",
-       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.5.0.tar.gz"],  # x-release-please-version
-       strip_prefix = "rules_sbom-0.5.0",  # x-release-please-version
+       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.5.1.tar.gz"],  # x-release-please-version
+       strip_prefix = "rules_sbom-0.5.1",  # x-release-please-version
        sha256 = "b0bed1fc15a1a782d0b971e960d1c04cd4fd3c84a4862198105a51e02622983e",
    )
    ```

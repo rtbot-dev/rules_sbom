@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.5.0...v0.5.1) (2025-10-12)
+
+
+### Bug Fixes
+
+* clarify README instructions ([c44d49e](https://github.com/rtbot-dev/rules_sbom/commit/c44d49e0d52fac2c9c1edd3816b910549f357515))
+* clarify README instructions ([f510718](https://github.com/rtbot-dev/rules_sbom/commit/f51071820b15db695268c9cdaff6e832a69f93db))
+* configure README for release automation ([5c4f6a3](https://github.com/rtbot-dev/rules_sbom/commit/5c4f6a34f563c65466693f020940fe699f99300c))
+
 ## [0.5.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.8...v0.5.0) (2025-10-12)
 
 
