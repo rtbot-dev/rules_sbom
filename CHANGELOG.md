@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.8...v0.5.0) (2025-10-12)
+
+
+### Features
+
+* improve pnpm and go sbom support ([ff0b185](https://github.com/rtbot-dev/rules_sbom/commit/ff0b185b1a63399faa5addc33959ca32d303817e))
+
 ## [0.4.8](https://github.com/rtbot-dev/rules_sbom/compare/v0.4.7...v0.4.8) (2025-10-11)
 
 
