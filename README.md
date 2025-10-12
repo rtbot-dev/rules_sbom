@@ -19,7 +19,7 @@
        module_name = "rules_sbom",
        urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.5.1.tar.gz"],  # x-release-please-version
        strip_prefix = "rules_sbom-0.5.1",  # x-release-please-version
-       sha256 = "b0bed1fc15a1a782d0b971e960d1c04cd4fd3c84a4862198105a51e02622983e",
+       sha256 = "011146723a36380e907548defc9ed352bbe22d2ddc7ac320cede4162ad9dd89e",
    )
    ```
    Update the version and checksum whenever you move to a newer release.
