@@ -7,7 +7,14 @@
 
 `rules_sbom` provides Bazel rules for generating Software Bill of Materials (SBOM) artifacts from Bazel targets using best-in-class external tooling.
 
-> ⚠️ This repository is under active development. The public APIs and toolchain integrations are not yet stable.
+The rules are production-ready and currently power SBOM generation in real workloads. They ship reproducible CycloneDX documents that track the dependencies that actually ship with your services as well as full workspace inventories.
+
+## Capabilities
+
+- Service-level SBOMs: point `sbom_artifact` at a single Bazel target (for example a binary, image, or library bundle) to enumerate only the artifacts that deploy with that unit.
+- Workspace-level SBOMs: aggregate manifests and lockfiles across the repository to emit a global view of every resolved dependency.
+- JavaScript and pnpm monorepos: the Syft wrapper synthesizes scoped `package.json` and lockfiles for each target, disables noisy catalogers, and can also ingest workspace-level node modules so you can switch between per-service and whole-repo reports.
+- Bundled Syft toolchain: pre-built binaries for macOS, Linux, and Windows ensure consistent output in CI and on developer machines.
 
 ## Getting started
 
@@ -48,6 +55,73 @@
 
 The [`docs/`](docs/overview.md) directory contains more detailed usage and toolchain notes (including [Windows testing via Parallels CLI](docs/windows_parallels.md)).
 
+## Generating SBOMs
+
+### Service-level SBOMs
+
+The simplest configuration points `sbom_artifact` at the Bazel target you ship. The rule stages that target's runfiles, injects any language-specific metadata (for example `package.json`, `go.mod`, or `requirements.txt`), and hands the curated bundle to Syft:
+
+```starlark
+load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
+
+sbom_artifact(
+    name = "payment_service_sbom",
+    target = "//services/payment:binary",
+)
+```
+
+### Workspace-level SBOMs
+
+To capture a global view, wrap the manifests, lockfiles, and other workspace inputs you care about in a `filegroup`, then ask `sbom_artifact` to process that group:
+
+```starlark
+load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "workspace_inputs",
+    srcs = [
+        "//:requirements.txt",
+        "//:poetry.lock",
+        "//:go.mod",
+        "//:go.sum",
+    ],
+)
+
+sbom_artifact(
+    name = "workspace_sbom",
+    target = ":workspace_inputs",
+)
+```
+
+This pattern works for any combination of languages—add whatever manifests make sense for your repository.
+
+### JavaScript and pnpm workspaces
+
+JavaScript targets receive additional handling so you can switch between service and workspace scopes without manual staging:
+
+- **Service SBOMs**: point `sbom_artifact` at the Bazel binary (for example a `js_binary`). The wrapper reduces the runfiles to the service's published assets, synthesizes a scoped `package.json`/`package-lock.json`, and disables unrelated catalogers so the SBOM contains only the dependencies that ship with that service.
+- **Workspace SBOMs**: collect the node workspace inputs and hand them to `sbom_artifact` for a holistic view:
+
+  ```starlark
+  load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
+
+  filegroup(
+      name = "pnpm_workspace_inputs",
+      srcs = [
+          "//:node_modules",
+          "//:package.json",
+          "//:pnpm-lock.yaml",
+      ],
+  )
+
+  sbom_artifact(
+      name = "pnpm_workspace_sbom",
+      target = ":pnpm_workspace_inputs",
+  )
+  ```
+
+Both modes produce CycloneDX documents tailored to pnpm monorepos without cross-service dependency bleed.
+
 ## Examples
 
 - Python (basic): [`examples/python`](examples/python/BUILD.bazel)
@@ -56,32 +130,8 @@ The [`docs/`](docs/overview.md) directory contains more detailed usage and toolc
 - Go (cobra CLI with transitive deps): [`examples/go_complex`](examples/go_complex/BUILD.bazel)
 - Node.js (basic): [`examples/node`](examples/node/BUILD.bazel)
 - Node.js (express app with transitive deps): [`examples/node_complex`](examples/node_complex/BUILD.bazel)
-- JavaScript / pnpm monorepo scenarios:
-  - Service/package SBOM: point `sbom_artifact` at the Bazel binary target (for example a `js_binary`). The Syft wrapper stages only that target's runfiles, synthesises a scoped `package.json`/`package-lock.json`, and disables GitHub Action catalogers, so the SBOM lists just the dependencies that ship with the service.
-  - Whole-repo SBOM: collect the workspace-level pnpm state into a `filegroup` and wrap it with `sbom_artifact`:
 
-    ```starlark
-    load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
-
-    filegroup(
-        name = "workspace_inputs",
-        srcs = [
-            "//:node_modules",
-            "//:package.json",
-            "//:pnpm-lock.yaml",
-        ],
-    )
-
-    sbom_artifact(
-        name = "workspace_sbom",
-        target = ":workspace_inputs",
-    )
-    ```
-
-    Building this target produces a CycloneDX SBOM that aggregates every dependency resolved across the pnpm workspace.
-- Go services:
-  - Service-level SBOMs can include the compiled binary together with module metadata. One approach is to create a `filegroup` that contains the service binary plus `go.mod`/`go.sum`, then pass that group to `sbom_artifact` so Syft enumerates the transitive Go modules.
-  - Workspace-level SBOMs can reuse the same `filegroup` pattern as the pnpm example above: add the repository `go.mod`/`go.sum` (and any additional module manifests) alongside the Node.js inputs before invoking `sbom_artifact`.
+Each example maps directly onto the service-level recipe above; combine the manifests you need to produce a workspace-level SBOM.
 
 ## Release workflow
 
