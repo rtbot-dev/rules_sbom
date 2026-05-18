@@ -1,0 +1,10 @@
+# Publish-to-BCR app configuration.
+# Docs: https://github.com/bazel-contrib/publish-to-bcr#configuration
+#
+# Uncomment and set `fixed_releaser` to force PRs to BCR to be attributed to a
+# specific GitHub user regardless of who pushed the release tag. Without this,
+# the app uses the GitHub release author.
+#
+# fixed_releaser:
+#   login: <github-username>
+#   email: <email>

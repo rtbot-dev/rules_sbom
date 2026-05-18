@@ -1,0 +1,13 @@
+{
+    "homepage": "https://github.com/rtbot-dev/rules_sbom",
+    "maintainers": [
+        {
+            "name": "rtbot-dev",
+            "email": "carcasses@gmail.com",
+            "github": "rtbot-dev"
+        }
+    ],
+    "repository": ["github:rtbot-dev/rules_sbom"],
+    "versions": [],
+    "yanked_versions": {}
+}
