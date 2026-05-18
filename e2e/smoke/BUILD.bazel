@@ -1,0 +1,12 @@
+load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
+
+filegroup(
+    name = "hello_pkg",
+    srcs = ["requirements.txt"],
+)
+
+sbom_artifact(
+    name = "hello_sbom",
+    target = ":hello_pkg",
+    output = "hello_sbom.json",
+)

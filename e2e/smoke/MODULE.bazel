@@ -1,0 +1,14 @@
+module(
+    name = "rules_sbom_smoke_test",
+    version = "0.0.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "rules_sbom", version = "0.0.0")
+
+# The BCR presubmit replaces this with a local override pointing at the
+# candidate module version under test.
+local_path_override(
+    module_name = "rules_sbom",
+    path = "../..",
+)
