@@ -26,7 +26,7 @@ The rules are production-ready and currently power SBOM generation in real workl
        module_name = "rules_sbom",
        urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.6.0.tar.gz"],  # x-release-please-version
        strip_prefix = "rules_sbom-0.6.0",  # x-release-please-version
-       sha256 = "011146723a36380e907548defc9ed352bbe22d2ddc7ac320cede4162ad9dd89e",
+       sha256 = "d478a99f269e0a02462430d0121e588d6654dceaa82c38054806bd0f606b3c43",
    )
    ```
    Update the version and checksum whenever you move to a newer release.
