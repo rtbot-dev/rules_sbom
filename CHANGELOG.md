@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.5.1...v0.6.0) (2026-05-18)
+
+
+### Features
+
+* **module:** declare compatibility_level for bcr publication ([2034b7c](https://github.com/rtbot-dev/rules_sbom/commit/2034b7c11c1232dfba4f01c3f02c0fe3d04def3c))
+
 ## [0.5.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.5.0...v0.5.1) (2025-10-12)
 
 

@@ -20,12 +20,12 @@ The rules are production-ready and currently power SBOM generation in real workl
 
 1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with this override snippet:
    ```starlark
-   bazel_dep(name = "rules_sbom", version = "0.5.1")  # x-release-please-version
+   bazel_dep(name = "rules_sbom", version = "0.6.0")  # x-release-please-version
 
    archive_override(
        module_name = "rules_sbom",
-       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.5.1.tar.gz"],  # x-release-please-version
-       strip_prefix = "rules_sbom-0.5.1",  # x-release-please-version
+       urls = ["https://github.com/rtbot-dev/rules_sbom/archive/refs/tags/v0.6.0.tar.gz"],  # x-release-please-version
+       strip_prefix = "rules_sbom-0.6.0",  # x-release-please-version
        sha256 = "011146723a36380e907548defc9ed352bbe22d2ddc7ac320cede4162ad9dd89e",
    )
    ```
