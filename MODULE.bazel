@@ -1,6 +1,6 @@
 module(
     name = "rules_sbom",
-    version = "0.6.0",  # x-release-please-version
+    version = "0.6.1",  # x-release-please-version
     compatibility_level = 1,
 )
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.6.0...v0.6.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **release:** switch source archive to release asset for stable bcr url ([621cfc2](https://github.com/rtbot-dev/rules_sbom/commit/621cfc2b22736ee136528ba48c2c851469f6c120))
+
 ## [0.6.0](https://github.com/rtbot-dev/rules_sbom/compare/v0.5.1...v0.6.0) (2026-05-18)
 
 
