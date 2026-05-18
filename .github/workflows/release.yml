@@ -20,6 +20,9 @@ jobs:
       - name: Checkout repository
         if: steps.release.outputs.release_created == 'true'
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: Build, upload source archive, and update README checksum
         if: steps.release.outputs.release_created == 'true'
         env:
@@ -28,11 +31,13 @@ jobs:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
+          git fetch --tags --quiet origin
           ARCHIVE="rules_sbom-${VERSION}.tar.gz"
           git archive --format=tar.gz --prefix="rules_sbom-${VERSION}/" "${TAG_NAME}" -o "${ARCHIVE}"
           SHA=$(shasum -a 256 "${ARCHIVE}" | awk '{print $1}')
           gh release upload "${TAG_NAME}" "${ARCHIVE}"
           rm "${ARCHIVE}"
+          sed -i "s|/rules_sbom-[0-9.]\{1,\}\\.tar\\.gz|/rules_sbom-${VERSION}.tar.gz|g" README.md
           sed -i "s/sha256 = \"[0-9a-f]\{64\}\"/sha256 = \"${SHA}\"/" README.md
           if git diff --quiet README.md; then
             echo "Checksum already up to date"
