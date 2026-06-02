@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/rtbot-dev/rules_sbom/compare/v0.6.1...v0.6.2) (2026-06-02)
+
+
+### Bug Fixes
+
+* **install:** drop archive_override now that module is on bcr ([38c52e0](https://github.com/rtbot-dev/rules_sbom/commit/38c52e05b854bf15dfd1212b5e5ce87a28a82a24))
+
 ## [0.6.1](https://github.com/rtbot-dev/rules_sbom/compare/v0.6.0...v0.6.1) (2026-05-18)
 
 
