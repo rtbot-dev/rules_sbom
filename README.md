@@ -20,7 +20,7 @@ The rules are production-ready and currently power SBOM generation in real workl
 
 1. Add the dependency in `MODULE.bazel`:
    ```starlark
-   bazel_dep(name = "rules_sbom", version = "0.6.1")  # x-release-please-version
+   bazel_dep(name = "rules_sbom", version = "0.6.2")  # x-release-please-version
    ```
    The module is published to the [Bazel Central Registry](https://registry.bazel.build/modules/rules_sbom).
 2. Provision the bundled Syft toolchain with built-in defaults:
