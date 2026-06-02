@@ -18,18 +18,11 @@ The rules are production-ready and currently power SBOM generation in real workl
 
 ## Getting started
 
-1. Add the dependency in `MODULE.bazel`. Until this module lands in the Bazel Central Registry, pin the GitHub release with this override snippet:
+1. Add the dependency in `MODULE.bazel`:
    ```starlark
    bazel_dep(name = "rules_sbom", version = "0.6.1")  # x-release-please-version
-
-   archive_override(
-       module_name = "rules_sbom",
-       urls = ["https://github.com/rtbot-dev/rules_sbom/releases/download/v0.6.1/rules_sbom-0.6.1.tar.gz"],  # x-release-please-version
-       strip_prefix = "rules_sbom-0.6.1",  # x-release-please-version
-       sha256 = "78a92659f9f6166e5180cc90bc7d5d53c512be67228645e7864c762536656270",
-   )
    ```
-   Update the version and checksum whenever you move to a newer release.
+   The module is published to the [Bazel Central Registry](https://registry.bazel.build/modules/rules_sbom).
 2. Provision the bundled Syft toolchain with built-in defaults:
    ```starlark
    sbom_ext = use_extension("@rules_sbom//sbom:extensions.bzl", "sbom_setup")
