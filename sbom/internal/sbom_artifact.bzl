@@ -10,6 +10,10 @@ _SUPPORTED_FORMATS = [
 
 _TOOLCHAIN_ID = "//toolchains:sbom_toolchain_type"
 
+def _display_label(label):
+    repo = "@" + label.repo_name if label.repo_name else ""
+    return "{}//{}:{}".format(repo, label.package, label.name)
+
 def _sbom_artifact_impl(ctx):
     toolchain = ctx.toolchains[_TOOLCHAIN_ID].sbom
 
@@ -49,6 +53,9 @@ def _sbom_artifact_impl(ctx):
     args.add("--format", requested_format)
     args.add("--target", str(ctx.attr.target.label))
     args.add("--inputs-manifest", inputs_manifest.path)
+    args.add("--source-name", ctx.attr.source_name or _display_label(ctx.attr.target.label))
+    if ctx.attr.source_version:
+        args.add("--source-version", ctx.attr.source_version)
     if ctx.attr.allow_placeholder:
         args.add("--allow-placeholder")
 
@@ -111,6 +118,12 @@ sbom_artifact = rule(
         "config": attr.label(
             doc = "Optional configuration file for the underlying SBOM tool.",
             allow_single_file = True,
+        ),
+        "source_name": attr.string(
+            doc = "Name recorded for the scanned source. Defaults to the target label.",
+        ),
+        "source_version": attr.string(
+            doc = "Optional version recorded for the scanned source.",
         ),
         "allow_placeholder": attr.bool(
             doc = "Write a placeholder SBOM instead of failing when syft errors. Never sign or publish these.",

@@ -115,6 +115,14 @@ JavaScript targets receive additional handling so you can switch between service
 
 Both modes produce CycloneDX documents tailored to pnpm monorepos without cross-service dependency bleed.
 
+### Reproducible output
+
+Building the same inputs twice gives the same SBOM:
+
+- The source name is the target label. Overridable with `source_name` or `source_version`
+- The timestamp is `SOURCE_DATE_EPOCH`, or `1970-01-01T00:00:00Z` if unset.
+- The SPDX `documentNamespace` and CycloneDX `serialNumber` end in a UUID from the build itself, not a random UUID.
+
 ### When Syft fails
 
 If Syft fails, the build fails. `allow_placeholder = True` restores the old behavior of writing a stub JSON instead; never sign or publish those.

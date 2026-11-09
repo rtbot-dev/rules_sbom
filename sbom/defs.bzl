@@ -9,6 +9,8 @@ def sbom_artifact(
         format = "cyclonedx_json",
         output = "sbom.json",
         config = None,
+        source_name = None,
+        source_version = None,
         allow_placeholder = False,
         visibility = None,
         tags = None,
@@ -21,6 +23,8 @@ def sbom_artifact(
         format: SBOM output format identifier.
         output: Output filename to register.
         config: Optional tool configuration file.
+        source_name: Name recorded for the scanned source. Defaults to the target label.
+        source_version: Optional version recorded for the scanned source.
         allow_placeholder: Write a placeholder SBOM instead of failing when syft errors.
         visibility: Optional visibility settings.
         tags: Optional tags propagated to the generated target.
@@ -32,6 +36,8 @@ def sbom_artifact(
         format = format,
         output = output,
         config = config,
+        source_name = source_name,
+        source_version = source_version,
         allow_placeholder = allow_placeholder,
         visibility = visibility,
         tags = tags,
