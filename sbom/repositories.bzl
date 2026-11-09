@@ -1,5 +1,16 @@
 """Repository helper macros for rules_sbom."""
 
+DEFAULT_SYFT_VERSION = "1.17.0"
+
+SYFT_PLATFORMS = [
+    "darwin_amd64",
+    "darwin_arm64",
+    "linux_amd64",
+    "linux_arm64",
+    "windows_amd64",
+]
+
+# The baked-in sha256 values are for DEFAULT_SYFT_VERSION only.
 _SYFT_ARTIFACTS = {
     ("linux", "amd64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_linux_amd64.tar.gz",
@@ -71,12 +82,20 @@ def _syft_repository_impl(repo_ctx):
     sha_override = repo_ctx.attr.sha256
     if sha_override:
         kwargs["sha256"] = sha_override
-    elif artifact.get("sha256"):
+    elif version == DEFAULT_SYFT_VERSION:
         kwargs["sha256"] = artifact["sha256"]
     if strip_prefix:
         kwargs["stripPrefix"] = strip_prefix
 
-    repo_ctx.download_and_extract(**kwargs)
+    result = repo_ctx.download_and_extract(**kwargs)
+    if "sha256" not in kwargs:
+        # buildifier: disable=print
+        print("rules_sbom: syft {} for {} has no pinned sha256; pin it with sha256 = {{\"{}\": \"{}\"}}".format(
+            version,
+            platform,
+            platform,
+            result.sha256,
+        ))
 
     binary_name = artifact.get("binary", "syft")
     if binary_name == "syft":
