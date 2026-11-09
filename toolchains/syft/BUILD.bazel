@@ -11,17 +11,13 @@ syft_toolchain(
         "spdx_json",
     ],
     wrapper = "//tools/syft_wrapper:syft_wrapper",
-    target_compatible_with = [
-        "@platforms//os:macos",
-        "@platforms//cpu:x86_64",
-    ],
 )
 
 toolchain(
     name = "darwin_amd64_toolchain",
     toolchain_type = "//toolchains:sbom_toolchain_type",
     toolchain = ":darwin_amd64_toolchain_impl",
-    target_compatible_with = [
+    exec_compatible_with = [
         "@platforms//os:macos",
         "@platforms//cpu:x86_64",
     ],
@@ -36,17 +32,13 @@ syft_toolchain(
         "spdx_json",
     ],
     wrapper = "//tools/syft_wrapper:syft_wrapper",
-    target_compatible_with = [
-        "@platforms//os:macos",
-        "@platforms//cpu:arm64",
-    ],
 )
 
 toolchain(
     name = "darwin_arm64_toolchain",
     toolchain_type = "//toolchains:sbom_toolchain_type",
     toolchain = ":darwin_arm64_toolchain_impl",
-    target_compatible_with = [
+    exec_compatible_with = [
         "@platforms//os:macos",
         "@platforms//cpu:arm64",
     ],
@@ -61,17 +53,13 @@ syft_toolchain(
         "spdx_json",
     ],
     wrapper = "//tools/syft_wrapper:syft_wrapper",
-    target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
 )
 
 toolchain(
     name = "linux_amd64_toolchain",
     toolchain_type = "//toolchains:sbom_toolchain_type",
     toolchain = ":linux_amd64_toolchain_impl",
-    target_compatible_with = [
+    exec_compatible_with = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
     ],
@@ -86,17 +74,13 @@ syft_toolchain(
         "spdx_json",
     ],
     wrapper = "//tools/syft_wrapper:syft_wrapper",
-    target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:arm64",
-    ],
 )
 
 toolchain(
     name = "linux_arm64_toolchain",
     toolchain_type = "//toolchains:sbom_toolchain_type",
     toolchain = ":linux_arm64_toolchain_impl",
-    target_compatible_with = [
+    exec_compatible_with = [
         "@platforms//os:linux",
         "@platforms//cpu:arm64",
     ],
@@ -111,17 +95,13 @@ syft_toolchain(
         "spdx_json",
     ],
     wrapper = "//tools/syft_wrapper:syft_wrapper",
-    target_compatible_with = [
-        "@platforms//os:windows",
-        "@platforms//cpu:x86_64",
-    ],
 )
 
 toolchain(
     name = "windows_amd64_toolchain",
     toolchain_type = "//toolchains:sbom_toolchain_type",
     toolchain = ":windows_amd64_toolchain_impl",
-    target_compatible_with = [
+    exec_compatible_with = [
         "@platforms//os:windows",
         "@platforms//cpu:x86_64",
     ],

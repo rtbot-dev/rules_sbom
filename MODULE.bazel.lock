@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "b6b6c45d141a64e34ad44762883aa2cb88061818cad9a8419578cf8e2038e9c6",
+  "moduleFileHash": "719604779eb0fe63a889d6f0b070814c655d75b634b796f1f369d0c45c152bbd",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -18,7 +18,7 @@
   "moduleDepGraph": {
     "<root>": {
       "name": "rules_sbom",
-      "version": "0.4.7",
+      "version": "0.6.2",
       "key": "<root>",
       "repoName": "rules_sbom",
       "executionPlatformsToRegister": [],
@@ -58,7 +58,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 12,
+                "line": 13,
                 "column": 10
               }
             },
@@ -72,7 +72,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 18,
+                "line": 19,
                 "column": 10
               }
             },
@@ -86,7 +86,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 24,
+                "line": 25,
                 "column": 10
               }
             },
@@ -100,7 +100,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 30,
+                "line": 31,
                 "column": 10
               }
             },
@@ -114,7 +114,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 36,
+                "line": 37,
                 "column": 10
               }
             }
