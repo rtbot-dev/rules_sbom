@@ -35,7 +35,7 @@ The rules are production-ready and currently power SBOM generation in real workl
        "@rules_sbom//toolchains/syft:windows_amd64_toolchain",
    )
    ```
-   The extension preinstalls Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with default SHA256 sums. To customize the download set, create a small wrapper extension that calls `rules_sbom_setup(..., platforms=[...], version="...", register_toolchains = False)` and register the desired toolchains explicitly.
+   The extension preinstalls Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with default SHA256 sums. To pin a different Syft release, see [Pinning the Syft version](#pinning-the-syft-version).
 3. Define SBOM targets:
    ```starlark
    load("@rules_sbom//sbom:defs.bzl", "sbom_artifact")
@@ -115,6 +115,26 @@ JavaScript targets receive additional handling so you can switch between service
 
 Both modes produce CycloneDX documents tailored to pnpm monorepos without cross-service dependency bleed.
 
+### Pinning the Syft version
+
+The root module can override the Syft release used by the bundled toolchains. Supply a sha256 for every platform; any missing one is downloaded unpinned and its hash is printed so you can add it:
+
+```starlark
+sbom_ext = use_extension("@rules_sbom//sbom:extensions.bzl", "sbom_setup")
+sbom_ext.syft(
+    version = "1.51.1",
+    sha256 = {
+        "darwin_amd64": "0e186ce1d4351ec276126851ca3ff258ed070e93e73574ed64858d4fc2339867",
+        "darwin_arm64": "ac063af3b9874769deb7ea1e6d76841e68f9e3bb50cd654226fc977de65532c1",
+        "linux_amd64": "8fcb33017a0dc1058298c923c436d19dfa68ae93968e0b423248542e3afb9fc3",
+        "linux_arm64": "a7fd2b784e6664acd44719270574f6cd8c6864fc2b1700bf9099bd1cccda7d7f",
+        "windows_amd64": "5e4bc3e6b6344b4625de0f7aa5351aaa72856d11d78462972de0a101ee2c1c8f",
+    },
+)
+```
+
+Only the root module's `syft` tag is honored. WORKSPACE users can pass the same `version` and `sha256` to `rules_sbom_setup`.
+
 ## Examples
 
 - Python (basic): [`examples/python`](examples/python/BUILD.bazel)
@@ -140,4 +160,4 @@ If you need to double-check a release manually, re-run the `Release Please` work
 
 Use `bazel sync` after upgrading to ensure the Syft toolchain archives download for your host platform; this refreshes the Syft binaries for the host OS/architecture and avoids stale CLI binaries across machines.
 
-Every published release now includes ready-to-copy install snippets (Bzlmod and WORKSPACE) directly in the GitHub release notes for easy onboarding. If you need to pin Syft to a different version, call `rules_sbom_setup(..., version="<syft_version>")` from a custom module extension or in your WORKSPACE.
+Every published release now includes ready-to-copy install snippets (Bzlmod and WORKSPACE) directly in the GitHub release notes for easy onboarding. To pin Syft to a different version, see [Pinning the Syft version](#pinning-the-syft-version).

@@ -29,7 +29,7 @@ register_toolchains(
 )
 ```
 
-The extension installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. To customize the download set, write a small wrapper extension that calls `rules_sbom_setup(..., version = "1.18.0", platforms = ["linux_amd64"], register_toolchains = False)` and register whichever toolchains you need.
+The extension installs Syft for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) with baked-in SHA256 sums. To use another Syft release, add `sbom_ext.syft(version = "...", sha256 = {"<os>_<arch>": "..."})` in the root module (see the README).
 
 Generate an SBOM for a target:
 
