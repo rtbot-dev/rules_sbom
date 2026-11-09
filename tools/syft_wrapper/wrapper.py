@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
+import time
 from pathlib import Path
 
 FORMAT_MAP = {
@@ -216,7 +216,7 @@ def _infer_components(entries):
 def _write_placeholder(output, fmt, target, config, tool_hint, inputs, components):
     fallback = {
         "tool": "rules_sbom syft wrapper placeholder",
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "format": fmt,
         "target": target,
         "config": config,
@@ -228,7 +228,7 @@ def _write_placeholder(output, fmt, target, config, tool_hint, inputs, component
         json.dump(fallback, fh)
 
 
-def main(argv=None):
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--format", required=True)
     parser.add_argument("--output", required=True)
@@ -236,10 +236,21 @@ def main(argv=None):
     parser.add_argument("--inputs-manifest", dest="inputs_manifest")
     parser.add_argument("--config")
     parser.add_argument("--tool", required=True)
+    parser.add_argument("--allow-placeholder", action="store_true")
     parser.add_argument("--extra-args", nargs=argparse.REMAINDER)
+    return generate(parser.parse_args(argv))
 
-    args = parser.parse_args(argv)
 
+def generate(args) -> int:
+    """
+    Stage the inputs, run syft over them and write the SBOM.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+
+    Returns:
+        int: Process exit code; non-zero when syft failed and no placeholder was allowed.
+    """
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -267,6 +278,8 @@ def main(argv=None):
         shutil.rmtree(staging_dir, ignore_errors=True)
 
     if not success:
+        if not args.allow_placeholder:
+            return 1
         print("syft_wrapper: generating placeholder output", file=sys.stderr)
         _write_placeholder(
             output_path,
@@ -277,7 +290,8 @@ def main(argv=None):
             inputs_json,
             components_json,
         )
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

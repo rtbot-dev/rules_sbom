@@ -49,6 +49,8 @@ def _sbom_artifact_impl(ctx):
     args.add("--format", requested_format)
     args.add("--target", str(ctx.attr.target.label))
     args.add("--inputs-manifest", inputs_manifest.path)
+    if ctx.attr.allow_placeholder:
+        args.add("--allow-placeholder")
 
     if config_file:
         args.add("--config", config_file.path)
@@ -109,6 +111,10 @@ sbom_artifact = rule(
         "config": attr.label(
             doc = "Optional configuration file for the underlying SBOM tool.",
             allow_single_file = True,
+        ),
+        "allow_placeholder": attr.bool(
+            doc = "Write a placeholder SBOM instead of failing when syft errors. Never sign or publish these.",
+            default = False,
         ),
     },
     doc = "Generates a Software Bill of Materials (SBOM) for a given target.",

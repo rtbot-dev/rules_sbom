@@ -115,6 +115,10 @@ JavaScript targets receive additional handling so you can switch between service
 
 Both modes produce CycloneDX documents tailored to pnpm monorepos without cross-service dependency bleed.
 
+### When Syft fails
+
+If Syft fails, the build fails. `allow_placeholder = True` restores the old behavior of writing a stub JSON instead; never sign or publish those.
+
 ## Examples
 
 - Python (basic): [`examples/python`](examples/python/BUILD.bazel)
