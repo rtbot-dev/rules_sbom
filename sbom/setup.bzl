@@ -10,7 +10,7 @@ _TOOLCHAIN_LABELS = {
 
 def rules_sbom_setup(
         syft_repo_rule,
-        version = "1.17.0",
+        version = "1.55.0",
         platforms = None,
         register_toolchains = True):
     """Registers Syft repositories and toolchains with sensible defaults.

@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "a79248911f9980f2b11eb4a0a686eacdb692bd71e6e8c2187312e02459ca37e2",
+  "moduleFileHash": "fc649533d747475e47478eba8e59753259096ca682db7a3f288219cb722e477a",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -52,7 +52,7 @@
               "tagName": "//sbom:repositories.bzl%syft_repository",
               "attributeValues": {
                 "platform": "darwin_amd64",
-                "version": "1.17.0",
+                "version": "1.55.0",
                 "name": "rules_sbom_syft_darwin_amd64"
               },
               "devDependency": false,
@@ -66,7 +66,7 @@
               "tagName": "//sbom:repositories.bzl%syft_repository",
               "attributeValues": {
                 "platform": "darwin_arm64",
-                "version": "1.17.0",
+                "version": "1.55.0",
                 "name": "rules_sbom_syft_darwin_arm64"
               },
               "devDependency": false,
@@ -80,7 +80,7 @@
               "tagName": "//sbom:repositories.bzl%syft_repository",
               "attributeValues": {
                 "platform": "linux_amd64",
-                "version": "1.17.0",
+                "version": "1.55.0",
                 "name": "rules_sbom_syft_linux_amd64"
               },
               "devDependency": false,
@@ -94,7 +94,7 @@
               "tagName": "//sbom:repositories.bzl%syft_repository",
               "attributeValues": {
                 "platform": "linux_arm64",
-                "version": "1.17.0",
+                "version": "1.55.0",
                 "name": "rules_sbom_syft_linux_arm64"
               },
               "devDependency": false,
@@ -108,7 +108,7 @@
               "tagName": "//sbom:repositories.bzl%syft_repository",
               "attributeValues": {
                 "platform": "windows_amd64",
-                "version": "1.17.0",
+                "version": "1.55.0",
                 "name": "rules_sbom_syft_windows_amd64"
               },
               "devDependency": false,
