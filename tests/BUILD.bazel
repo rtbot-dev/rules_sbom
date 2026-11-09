@@ -1,3 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_test")
 load("//tests:inputs_manifest_test.bzl", "inputs_manifest_test_suite")
 
 inputs_manifest_test_suite()
+
+py_test(
+    name = "wrapper_test",
+    srcs = ["wrapper_test.py"],
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
+    deps = ["//tools/syft_wrapper:wrapper_lib"],
+)

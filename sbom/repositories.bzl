@@ -4,31 +4,31 @@ _SYFT_ARTIFACTS = {
     ("linux", "amd64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_linux_amd64.tar.gz",
         "strip_prefix": "",
-        "sha256": "3485e831c21fd80b41fa3fc1f72e10367989b2d1aee082d642b5b0e658a02b44",
+        "sha256": "bb65249542db5fedeeb4d3f9b018b75e7264dbfbbb10486f044581a92f90490d",
         "binary": "syft",
     },
     ("linux", "arm64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_linux_arm64.tar.gz",
         "strip_prefix": "",
-        "sha256": "7f3e0cf3f8bc5dc320e56b0e133c854c8000d5f473bd61d247341a1b7bfa27ea",
+        "sha256": "929bd163db2d7cd2255d3bcb8967208079813d7b46b0c952f7b794d8e2c7d304",
         "binary": "syft",
     },
     ("darwin", "amd64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_darwin_amd64.tar.gz",
         "strip_prefix": "",
-        "sha256": "81fb22678eba3380c28e0f425e0e7ff0a41ba57a8e1e98825ad92a7fa5698c78",
+        "sha256": "e2e5831cbabaec9a36fe65c34755c1113982c842a685edce3ce0b54a0ded8003",
         "binary": "syft",
     },
     ("darwin", "arm64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_darwin_arm64.tar.gz",
         "strip_prefix": "",
-        "sha256": "2cb79ecdc62d453912e299e7b814107700250ffeffdb3a9ea5dc9099af7b6dba",
+        "sha256": "1217c258bd5eb91ef3189cf22a82e02f9cac07e4ce934350f428e93aff674625",
         "binary": "syft",
     },
     ("windows", "amd64"): {
         "url": "https://github.com/anchore/syft/releases/download/v{version}/syft_{version}_windows_amd64.zip",
         "strip_prefix": "",
-        "sha256": "a533ce601ed66a2be3b3418fe914baa1cf946e80e47dfbd71a58d8f7894c0a0e",
+        "sha256": "ada4c9b93af575f479ce80fce6629897272a2d41f300a14bc49bace020767ca2",
         "binary": "syft.exe",
     },
 }

@@ -44,3 +44,15 @@ sbom_artifact(
 ```
 
 The resulting file is written to `bazel-bin/service/my_binary_sbom/sbom.json` (path may vary depending on the output filename).
+
+To scan an OCI image layout as an image, set `scheme = "oci-dir"`. Extra Syft flags go in `syft_args`:
+
+```starlark
+sbom_artifact(
+    name = "image_sbom",
+    target = ":image",
+    scheme = "oci-dir",
+    format = "spdx_json",
+    syft_args = ["--platform", "linux/arm64"],
+)
+```

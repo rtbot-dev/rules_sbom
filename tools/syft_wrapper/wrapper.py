@@ -1,17 +1,22 @@
 import argparse
+import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
+import time
+import uuid
 from pathlib import Path
 
 FORMAT_MAP = {
     "cyclonedx_json": "cyclonedx-json",
     "spdx_json": "spdx-json",
 }
+
+_TRAILING_UUID = re.compile(r"-[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$")
 
 
 def _read_manifest(manifest_path: Path):
@@ -153,14 +158,18 @@ def _write_root_package_manifest(root: Path, packages: dict):
     (root / "package-lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
 
 
-def _run_syft(tool, syft_format, staging_dir, output, config, extra_args):
-    cmd = [tool, "scan", str(staging_dir), "-o", f"{syft_format}={output}", "--quiet"]
+def _run_syft(tool, syft_format, source, output, config, source_name, source_version, extra_args):
+    cmd = [tool, "scan", source, "-o", f"{syft_format}={output}", "--quiet"]
     cmd.extend([
         "--select-catalogers",
         "-github-actions-usage-cataloger,-github-action-workflow-usage-cataloger",
     ])
     if config:
         cmd.extend(["--config", config])
+    if source_name:
+        cmd.extend(["--source-name", source_name])
+    if source_version:
+        cmd.extend(["--source-version", source_version])
     if extra_args:
         cmd.extend(extra_args)
     env = os.environ.copy()
@@ -173,6 +182,46 @@ def _run_syft(tool, syft_format, staging_dir, output, config, extra_args):
     except OSError as exc:
         print(f"syft_wrapper: unable to launch syft: {exc}", file=sys.stderr)
         return False
+
+
+def _fixed_timestamp():
+    epoch = int(os.environ.get("SOURCE_DATE_EPOCH", "0"))
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch))
+
+
+def _content_uuid(doc, exclude):
+    content = {k: v for k, v in doc.items() if k != exclude}
+    canonical = json.dumps(content, sort_keys=True, separators=(",", ":"))
+    return uuid.uuid5(uuid.NAMESPACE_URL, hashlib.sha256(canonical.encode("utf-8")).hexdigest())
+
+
+def _normalize_sbom(output: Path, fmt):
+    """
+    Replace syft's per-run timestamp and random UUID so identical inputs give identical bytes.
+
+    Args:
+        output (Path): SBOM file written by syft, rewritten in place.
+        fmt (str): rules_sbom format identifier (spdx_json or cyclonedx_json).
+
+    Returns:
+        None
+    """
+    doc = json.loads(output.read_text(encoding="utf-8"))
+    timestamp = _fixed_timestamp()
+    if fmt == "spdx_json":
+        doc.setdefault("creationInfo", {})["created"] = timestamp
+        prefix = _TRAILING_UUID.sub("", doc.get("documentNamespace", ""))
+        doc["documentNamespace"] = f"{prefix}-{_content_uuid(doc, 'documentNamespace')}"
+    elif fmt == "cyclonedx_json":
+        doc.setdefault("metadata", {})["timestamp"] = timestamp
+        doc["serialNumber"] = f"urn:uuid:{_content_uuid(doc, 'serialNumber')}"
+    output.write_text(json.dumps(doc), encoding="utf-8")
+
+
+def _oci_dir_entries(entries):
+    if len(entries) != 1 or not entries[0][0].is_dir():
+        return None
+    return [(entries[0][0], Path("image"))]
 
 
 def _infer_components(entries):
@@ -216,7 +265,7 @@ def _infer_components(entries):
 def _write_placeholder(output, fmt, target, config, tool_hint, inputs, components):
     fallback = {
         "tool": "rules_sbom syft wrapper placeholder",
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "format": fmt,
         "target": target,
         "config": config,
@@ -228,7 +277,7 @@ def _write_placeholder(output, fmt, target, config, tool_hint, inputs, component
         json.dump(fallback, fh)
 
 
-def main(argv=None):
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--format", required=True)
     parser.add_argument("--output", required=True)
@@ -236,10 +285,24 @@ def main(argv=None):
     parser.add_argument("--inputs-manifest", dest="inputs_manifest")
     parser.add_argument("--config")
     parser.add_argument("--tool", required=True)
+    parser.add_argument("--scheme", choices=("dir", "oci-dir"), default="dir")
+    parser.add_argument("--source-name")
+    parser.add_argument("--source-version")
+    parser.add_argument("--allow-placeholder", action="store_true")
     parser.add_argument("--extra-args", nargs=argparse.REMAINDER)
+    return generate(parser.parse_args(argv))
 
-    args = parser.parse_args(argv)
 
+def generate(args) -> int:
+    """
+    Stage the inputs, run syft over them and write a normalized SBOM.
+
+    Args:
+        args (argparse.Namespace): Parsed command line arguments.
+
+    Returns:
+        int: Process exit code; non-zero when syft failed and no placeholder was allowed.
+    """
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -247,7 +310,14 @@ def main(argv=None):
     entries, inputs_json = _read_manifest(manifest_path)
     components_json = _infer_components(entries)
 
+    if args.scheme == "oci-dir":
+        entries = _oci_dir_entries(entries)
+        if entries is None:
+            print("syft_wrapper: scheme 'oci-dir' needs exactly one input directory", file=sys.stderr)
+            return 1
+
     staging_dir = _copy_inputs(entries)
+    source = f"oci-dir:{staging_dir / 'image'}" if args.scheme == "oci-dir" else str(staging_dir)
     syft_format = FORMAT_MAP.get(args.format, args.format)
 
     packages = _collect_node_modules(staging_dir)
@@ -258,15 +328,19 @@ def main(argv=None):
         success = _run_syft(
             args.tool,
             syft_format,
-            staging_dir,
+            source,
             str(output_path),
             args.config,
+            args.source_name,
+            args.source_version,
             args.extra_args,
         )
     finally:
         shutil.rmtree(staging_dir, ignore_errors=True)
 
     if not success:
+        if not args.allow_placeholder:
+            return 1
         print("syft_wrapper: generating placeholder output", file=sys.stderr)
         _write_placeholder(
             output_path,
@@ -277,7 +351,10 @@ def main(argv=None):
             inputs_json,
             components_json,
         )
+    else:
+        _normalize_sbom(output_path, args.format)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

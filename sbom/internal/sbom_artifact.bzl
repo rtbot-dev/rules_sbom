@@ -8,7 +8,25 @@ _SUPPORTED_FORMATS = [
     "spdx_json",
 ]
 
+_SCHEMES = [
+    "dir",
+    "oci-dir",
+]
+
 _TOOLCHAIN_ID = "//toolchains:sbom_toolchain_type"
+
+def _oci_dir_input(ctx, target_files):
+    files = target_files.to_list()
+    if len(files) != 1 or not files[0].is_directory:
+        fail("sbom_artifact: scheme 'oci-dir' needs {} to output exactly one directory (an OCI image layout), got: {}".format(
+            ctx.attr.target.label,
+            [f.short_path for f in files],
+        ))
+    return depset(files)
+
+def _display_label(label):
+    repo = "@" + label.repo_name if label.repo_name else ""
+    return "{}//{}:{}".format(repo, label.package, label.name)
 
 def _sbom_artifact_impl(ctx):
     toolchain = ctx.toolchains[_TOOLCHAIN_ID].sbom
@@ -32,13 +50,16 @@ def _sbom_artifact_impl(ctx):
     if default_runfiles:
         manifest_sets.append(default_runfiles.files)
     manifest_files = depset(transitive = manifest_sets)
+    if ctx.attr.scheme == "oci-dir":
+        manifest_files = _oci_dir_input(ctx, target_files)
+        manifest_sets = [manifest_files]
 
     config_file = None
     if ctx.attr.config:
         config_file = ctx.file.config
 
     inputs_manifest = ctx.actions.declare_file("{}_inputs.list".format(ctx.label.name))
-    manifest_content = build_inputs_manifest(manifest_files, config_file)
+    manifest_content = build_inputs_manifest(manifest_files, None if ctx.attr.scheme == "oci-dir" else config_file)
     ctx.actions.write(
         output = inputs_manifest,
         content = manifest_content,
@@ -49,6 +70,12 @@ def _sbom_artifact_impl(ctx):
     args.add("--format", requested_format)
     args.add("--target", str(ctx.attr.target.label))
     args.add("--inputs-manifest", inputs_manifest.path)
+    args.add("--scheme", ctx.attr.scheme)
+    args.add("--source-name", ctx.attr.source_name or _display_label(ctx.attr.target.label))
+    if ctx.attr.source_version:
+        args.add("--source-version", ctx.attr.source_version)
+    if ctx.attr.allow_placeholder:
+        args.add("--allow-placeholder")
 
     if config_file:
         args.add("--config", config_file.path)
@@ -61,12 +88,13 @@ def _sbom_artifact_impl(ctx):
         args.add("--tool", toolchain.tool.path)
         extra_tools.append(toolchain.tool)
 
-    transitive_inputs = [target_files]
-    if default_runfiles:
-        transitive_inputs.append(default_runfiles.files)
+    if ctx.attr.syft_args:
+        args.add("--extra-args")
+        args.add_all(ctx.attr.syft_args)
+
     inputs = depset(
         direct = [inputs_manifest] + ([config_file] if config_file else []),
-        transitive = transitive_inputs,
+        transitive = manifest_sets,
     )
 
     ctx.actions.run(
@@ -109,6 +137,25 @@ sbom_artifact = rule(
         "config": attr.label(
             doc = "Optional configuration file for the underlying SBOM tool.",
             allow_single_file = True,
+        ),
+        "scheme": attr.string(
+            doc = "How syft reads the target. 'dir' scans the staged files and runfiles; " +
+                  "'oci-dir' scans the target's single output directory as an OCI image layout.",
+            default = "dir",
+            values = _SCHEMES,
+        ),
+        "syft_args": attr.string_list(
+            doc = "Extra arguments appended to the syft command line, e.g. ['--platform', 'linux/arm64'].",
+        ),
+        "source_name": attr.string(
+            doc = "Name recorded for the scanned source. Defaults to the target label.",
+        ),
+        "source_version": attr.string(
+            doc = "Optional version recorded for the scanned source.",
+        ),
+        "allow_placeholder": attr.bool(
+            doc = "Write a placeholder SBOM instead of failing when syft errors. Never sign or publish these.",
+            default = False,
         ),
     },
     doc = "Generates a Software Bill of Materials (SBOM) for a given target.",

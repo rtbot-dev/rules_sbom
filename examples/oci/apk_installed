@@ -1,0 +1,26 @@
+P:musl
+V:1.2.5-r0
+A:aarch64
+S:409853
+I:671744
+T:the musl c library (libc) implementation
+U:https://musl.libc.org/
+L:MIT
+o:musl
+m:Example <example@example.com>
+t:1700000000
+c:0000000000000000000000000000000000000000
+
+P:busybox
+V:1.36.1-r29
+A:aarch64
+S:525012
+I:952320
+T:Size optimized toolbox of many common UNIX utilities
+U:https://busybox.net/
+L:GPL-2.0-only
+o:busybox
+m:Example <example@example.com>
+t:1700000000
+c:0000000000000000000000000000000000000000
+
