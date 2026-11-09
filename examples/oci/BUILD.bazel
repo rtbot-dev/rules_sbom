@@ -1,0 +1,48 @@
+load("@rules_oci//oci:defs.bzl", "oci_image")
+load("@rules_python//python:defs.bzl", "py_test")
+load("@tar.bzl//tar:tar.bzl", "tar")
+load("//sbom:defs.bzl", "sbom_artifact")
+
+_NOT_WINDOWS = select({
+    "@platforms//os:windows": ["@platforms//:incompatible"],
+    "//conditions:default": [],
+})
+
+tar(
+    name = "apk_db_layer",
+    srcs = ["apk_installed"],
+    mtree = [
+        "./lib/apk/db/installed uid=0 gid=0 mode=0644 time=0 type=file content=$(location apk_installed)",
+    ],
+    target_compatible_with = _NOT_WINDOWS,
+)
+
+oci_image(
+    name = "image",
+    architecture = "arm64",
+    os = "linux",
+    tars = [":apk_db_layer"],
+    target_compatible_with = _NOT_WINDOWS,
+)
+
+sbom_artifact(
+    name = "image_sbom",
+    format = "spdx_json",
+    output = "image_sbom.spdx.json",
+    scheme = "oci-dir",
+    source_version = "1.0.0",
+    syft_args = [
+        "--platform",
+        "linux/arm64",
+    ],
+    target = ":image",
+    target_compatible_with = _NOT_WINDOWS,
+)
+
+py_test(
+    name = "image_sbom_test",
+    srcs = ["image_sbom_test.py"],
+    args = ["$(rootpath :image_sbom)"],
+    data = [":image_sbom"],
+    target_compatible_with = _NOT_WINDOWS,
+)

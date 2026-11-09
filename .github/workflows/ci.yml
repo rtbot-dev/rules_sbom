@@ -50,7 +50,7 @@ jobs:
         run: bazel --version
 
       - name: Run unit tests
-        run: bazel test --nocache_test_results //tests/... $EXTRA_BAZEL_FLAGS
+        run: bazel test --nocache_test_results //tests/... //examples/oci/... $EXTRA_BAZEL_FLAGS
 
       - name: Build example SBOM targets
         run: |

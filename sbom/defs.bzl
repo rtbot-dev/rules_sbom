@@ -9,6 +9,8 @@ def sbom_artifact(
         format = "cyclonedx_json",
         output = "sbom.json",
         config = None,
+        scheme = "dir",
+        syft_args = [],
         source_name = None,
         source_version = None,
         allow_placeholder = False,
@@ -23,6 +25,8 @@ def sbom_artifact(
         format: SBOM output format identifier.
         output: Output filename to register.
         config: Optional tool configuration file.
+        scheme: "dir" scans the staged files; "oci-dir" scans the target's single output directory as an OCI image layout.
+        syft_args: Extra arguments appended to the syft command line, e.g. ["--platform", "linux/arm64"].
         source_name: Name recorded for the scanned source. Defaults to the target label.
         source_version: Optional version recorded for the scanned source.
         allow_placeholder: Write a placeholder SBOM instead of failing when syft errors.
@@ -36,6 +40,8 @@ def sbom_artifact(
         format = format,
         output = output,
         config = config,
+        scheme = scheme,
+        syft_args = syft_args,
         source_name = source_name,
         source_version = source_version,
         allow_placeholder = allow_placeholder,

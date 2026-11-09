@@ -115,6 +115,20 @@ JavaScript targets receive additional handling so you can switch between service
 
 Both modes produce CycloneDX documents tailored to pnpm monorepos without cross-service dependency bleed.
 
+### Container images
+
+Set `scheme = "oci-dir"` to scan an OCI image layout, such as a rules_oci `oci_image`, as an image. The target must output exactly one directory. `syft_args` passes extra flags to Syft:
+
+```starlark
+sbom_artifact(
+    name = "image_sbom",
+    target = ":image",
+    scheme = "oci-dir",
+    format = "spdx_json",
+    syft_args = ["--platform", "linux/arm64"],
+)
+```
+
 ### Reproducible output
 
 Building the same inputs twice gives the same SBOM:
@@ -135,6 +149,7 @@ If Syft fails, the build fails. `allow_placeholder = True` restores the old beha
 - Go (cobra CLI with transitive deps): [`examples/go_complex`](examples/go_complex/BUILD.bazel)
 - Node.js (basic): [`examples/node`](examples/node/BUILD.bazel)
 - Node.js (express app with transitive deps): [`examples/node_complex`](examples/node_complex/BUILD.bazel)
+- OCI image layout (rules_oci): [`examples/oci`](examples/oci/BUILD.bazel)
 
 Each example maps directly onto the service-level recipe above; combine the manifests you need to produce a workspace-level SBOM.
 

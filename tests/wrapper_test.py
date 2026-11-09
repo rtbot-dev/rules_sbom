@@ -100,6 +100,30 @@ class WrapperTest(unittest.TestCase):
         self.assertEqual(first.read_bytes(), second.read_bytes())
         self.assertEqual(json.loads(first.read_text())["metadata"]["timestamp"], "1970-01-01T00:00:00Z")
 
+    def _oci_manifest(self, *extra_entries):
+        image = self.tmp / "image"
+        (image / "blobs").mkdir(parents=True)
+        (image / "index.json").write_text("{}", encoding="utf-8")
+        lines = [f"{image}\t../other_repo/pkg/image", *extra_entries]
+        self.manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def test_oci_dir_scheme_and_syft_args(self):
+        self._oci_manifest()
+        out = self.tmp / "out.json"
+        rc = self._run(self._fake_syft(), out, "--scheme", "oci-dir", "--extra-args", "--platform", "linux/arm64")
+        self.assertEqual(rc, 0)
+        argv = json.loads(Path(f"{out}.argv").read_text())
+        scheme, path = argv[1].split(":", 1)
+        self.assertEqual(scheme, "oci-dir")
+        self.assertEqual(Path(path).name, "image")
+        self.assertEqual(argv[-2:], ["--platform", "linux/arm64"])
+
+    def test_oci_dir_requires_single_directory(self):
+        other = self.tmp / "other.txt"
+        other.write_text("x", encoding="utf-8")
+        self._oci_manifest(f"{other}\tpkg/other.txt")
+        self.assertEqual(self._run(self._fake_syft(), self.tmp / "out.json", "--scheme", "oci-dir"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

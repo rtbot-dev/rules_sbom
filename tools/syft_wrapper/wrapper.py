@@ -158,8 +158,8 @@ def _write_root_package_manifest(root: Path, packages: dict):
     (root / "package-lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
 
 
-def _run_syft(tool, syft_format, staging_dir, output, config, source_name, source_version, extra_args):
-    cmd = [tool, "scan", str(staging_dir), "-o", f"{syft_format}={output}", "--quiet"]
+def _run_syft(tool, syft_format, source, output, config, source_name, source_version, extra_args):
+    cmd = [tool, "scan", source, "-o", f"{syft_format}={output}", "--quiet"]
     cmd.extend([
         "--select-catalogers",
         "-github-actions-usage-cataloger,-github-action-workflow-usage-cataloger",
@@ -216,6 +216,12 @@ def _normalize_sbom(output: Path, fmt):
         doc.setdefault("metadata", {})["timestamp"] = timestamp
         doc["serialNumber"] = f"urn:uuid:{_content_uuid(doc, 'serialNumber')}"
     output.write_text(json.dumps(doc), encoding="utf-8")
+
+
+def _oci_dir_entries(entries):
+    if len(entries) != 1 or not entries[0][0].is_dir():
+        return None
+    return [(entries[0][0], Path("image"))]
 
 
 def _infer_components(entries):
@@ -279,6 +285,7 @@ def main(argv=None) -> int:
     parser.add_argument("--inputs-manifest", dest="inputs_manifest")
     parser.add_argument("--config")
     parser.add_argument("--tool", required=True)
+    parser.add_argument("--scheme", choices=("dir", "oci-dir"), default="dir")
     parser.add_argument("--source-name")
     parser.add_argument("--source-version")
     parser.add_argument("--allow-placeholder", action="store_true")
@@ -303,7 +310,14 @@ def generate(args) -> int:
     entries, inputs_json = _read_manifest(manifest_path)
     components_json = _infer_components(entries)
 
+    if args.scheme == "oci-dir":
+        entries = _oci_dir_entries(entries)
+        if entries is None:
+            print("syft_wrapper: scheme 'oci-dir' needs exactly one input directory", file=sys.stderr)
+            return 1
+
     staging_dir = _copy_inputs(entries)
+    source = f"oci-dir:{staging_dir / 'image'}" if args.scheme == "oci-dir" else str(staging_dir)
     syft_format = FORMAT_MAP.get(args.format, args.format)
 
     packages = _collect_node_modules(staging_dir)
@@ -314,7 +328,7 @@ def generate(args) -> int:
         success = _run_syft(
             args.tool,
             syft_format,
-            staging_dir,
+            source,
             str(output_path),
             args.config,
             args.source_name,
